@@ -1,0 +1,60 @@
+end count 1
+7:   const BottomNav({super.key});
+10:   Widget build(BuildContext context, WidgetRef ref) {
+11:     final l10n = ref.watch(localizationProvider);
+13:       _BottomNavItem(
+15:         label: l10n.t('settings'),
+17:       ),
+18:       _BottomNavItem(
+20:         label: l10n.t('calendar'),
+22:       ),
+23:       _BottomNavItem(
+25:         label: l10n.t('todo'),
+27:       ),
+28:       _BottomNavItem(
+30:         label: l10n.t('timer'),
+32:       ),
+35:     final location = GoRouterState.of(context).uri.toString();
+37:     return SafeArea(
+39:       child: Container(
+40:       decoration: BoxDecoration(
+41:         color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+42:         border: Border(
+43:           top: BorderSide(
+44:             color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+45:           ),
+46:         ),
+48:           BoxShadow(
+49:             color: Colors.black.withOpacity(0.2),
+51:             offset: const Offset(0, -4),
+52:           ),
+54:       ),
+55:       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+56:       child: Row(
+58:         children: items.map((item) {
+61:               ? Theme.of(context).colorScheme.primary
+62:               : Theme.of(context).colorScheme.onSurface.withOpacity(0.6);
+63:           return Expanded(
+64:             child: InkWell(
+65:               borderRadius: BorderRadius.circular(12),
+66:               onTap: () {
+67:                 if (!isActive) {
+68:                   context.go(item.path);
+71:               child: Padding(
+72:                 padding: const EdgeInsets.symmetric(vertical: 6),
+73:                 child: Column(
+76:                     Icon(item.icon, color: color),
+77:                     const SizedBox(height: 4),
+78:                     Text(
+80:                       style: Theme.of(
+82:                       ).textTheme.labelSmall?.copyWith(color: color),
+83:                     ),
+85:                 ),
+86:               ),
+87:             ),
+88:           );
+89:         }).toList(),
+90:       ),
+91:     );
+96:   const _BottomNavItem({
+100:   });
