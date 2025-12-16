@@ -85,7 +85,10 @@ class _RingPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth * glowStrokeMultiplier
       ..strokeCap = StrokeCap.round
-      ..maskFilter = MaskFilter.blur(BlurStyle.outer, blurSigma * glowBlurMultiplier);
+      ..maskFilter = MaskFilter.blur(
+        BlurStyle.outer,
+        blurSigma * glowBlurMultiplier,
+      );
 
     // Main arc should be sharp and fully colored; keep the blur only on the glow.
     final progressPaint = Paint()

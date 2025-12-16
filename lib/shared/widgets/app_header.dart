@@ -23,7 +23,6 @@ class AppHeader extends ConsumerWidget {
         border: Border(
           bottom: BorderSide(color: theme.colorScheme.outline.withOpacity(0.3)),
         ),
-
       ),
       child: Row(
         children: [
@@ -81,8 +80,9 @@ class AppHeader extends ConsumerWidget {
     AppLanguage language,
     AppLocalizations translations,
   ) {
-    final alignment =
-        language == AppLanguage.he ? Alignment.centerLeft : Alignment.centerRight;
+    final alignment = language == AppLanguage.he
+        ? Alignment.centerLeft
+        : Alignment.centerRight;
     final items = [
       _NavItem(
         icon: Icons.timer_outlined,
@@ -138,9 +138,8 @@ class AppHeader extends ConsumerWidget {
                       children: [
                         Text(
                           translations.t('menu'),
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 12),
                         for (final item in items)
@@ -173,11 +172,7 @@ class AppHeader extends ConsumerWidget {
 }
 
 class _NavItem {
-  const _NavItem({
-    required this.icon,
-    required this.label,
-    required this.path,
-  });
+  const _NavItem({required this.icon, required this.label, required this.path});
 
   final IconData icon;
   final String label;

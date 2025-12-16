@@ -472,91 +472,92 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         // Use LayoutBuilder to compute a childAspectRatio so 5 rows fit the
         // available space and are fully visible without scrolling.
         Expanded(
-          child: LayoutBuilder(builder: (context, constraints) {
-            const int rows = 5;
-            const double spacing = 8.0;
-            final double totalVerticalSpacing = (rows - 1) * spacing;
-            final double cellHeight =
-                (constraints.maxHeight - totalVerticalSpacing) / rows;
-            final double totalHorizontalSpacing = (7 - 1) * spacing;
-            final double cellWidth =
-                (constraints.maxWidth - totalHorizontalSpacing) / 7;
-            final double childAspectRatio = cellWidth / cellHeight;
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              const int rows = 5;
+              const double spacing = 8.0;
+              final double totalVerticalSpacing = (rows - 1) * spacing;
+              final double cellHeight =
+                  (constraints.maxHeight - totalVerticalSpacing) / rows;
+              final double totalHorizontalSpacing = (7 - 1) * spacing;
+              final double cellWidth =
+                  (constraints.maxWidth - totalHorizontalSpacing) / 7;
+              final double childAspectRatio = cellWidth / cellHeight;
 
-            return GridView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate:
-                  SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 7,
-                crossAxisSpacing: spacing,
-                mainAxisSpacing: spacing,
-                childAspectRatio: childAspectRatio,
-              ),
-              itemCount: days.length,
-              itemBuilder: (context, index) {
-                final day = days[index];
-              final isToday = _isSameDay(day, DateTime.now());
-              final inMonth = day.month == date.month;
-              final items = _itemsForDate(
-                date: day,
-                countdowns: countdowns,
-                tasks: tasks,
-                context: context,
-                l10n: l10n,
-              );
-              return GestureDetector(
-                onTap: () => setState(() {
-                  _currentDate = day;
-                  _viewMode = CalendarViewMode.day;
-                }),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: isToday
-                          ? Theme.of(context).colorScheme.primary
-                          : Theme.of(
-                              context,
-                            ).colorScheme.outline.withOpacity(0.2),
-                    ),
-                    color: inMonth
-                        ? Theme.of(context).colorScheme.surface
-                        : Theme.of(
-                            context,
-                          ).colorScheme.surface.withOpacity(0.5),
-                  ),
-                  padding: const EdgeInsets.all(8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${day.day}',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                      const Spacer(),
-                      Wrap(
-                        spacing: 2,
-                        children: items
-                            .take(3)
-                            .map(
-                              (item) => Container(
-                                width: 6,
-                                height: 6,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: item.color,
-                                ),
-                              ),
-                            )
-                            .toList(),
-                      ),
-                    ],
-                  ),
+              return GridView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 7,
+                  crossAxisSpacing: spacing,
+                  mainAxisSpacing: spacing,
+                  childAspectRatio: childAspectRatio,
                 ),
+                itemCount: days.length,
+                itemBuilder: (context, index) {
+                  final day = days[index];
+                  final isToday = _isSameDay(day, DateTime.now());
+                  final inMonth = day.month == date.month;
+                  final items = _itemsForDate(
+                    date: day,
+                    countdowns: countdowns,
+                    tasks: tasks,
+                    context: context,
+                    l10n: l10n,
+                  );
+                  return GestureDetector(
+                    onTap: () => setState(() {
+                      _currentDate = day;
+                      _viewMode = CalendarViewMode.day;
+                    }),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: isToday
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(
+                                  context,
+                                ).colorScheme.outline.withOpacity(0.2),
+                        ),
+                        color: inMonth
+                            ? Theme.of(context).colorScheme.surface
+                            : Theme.of(
+                                context,
+                              ).colorScheme.surface.withOpacity(0.5),
+                      ),
+                      padding: const EdgeInsets.all(8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${day.day}',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                          const Spacer(),
+                          Wrap(
+                            spacing: 2,
+                            children: items
+                                .take(3)
+                                .map(
+                                  (item) => Container(
+                                    width: 6,
+                                    height: 6,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: item.color,
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
               );
             },
-            );
-          }),
+          ),
         ),
       ],
     );
