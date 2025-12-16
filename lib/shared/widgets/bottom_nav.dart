@@ -56,7 +56,9 @@ class BottomNav extends ConsumerWidget {
           top: 8,
           left: 12,
           right: 12,
-          bottom: MediaQuery.of(context).viewPadding.bottom + 8,
+          // Clamp the bottom inset so the nav doesn't become too tall on
+          // devices with large system insets. Keep a small extra offset.
+          bottom: MediaQuery.of(context).viewPadding.bottom.clamp(0.0, 12.0) + 6,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
