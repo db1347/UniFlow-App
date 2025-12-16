@@ -445,7 +445,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   }) {
     final firstDay = DateTime(date.year, date.month, 1);
     final start = firstDay.subtract(Duration(days: firstDay.weekday % 7));
-    final totalDays = 42;
+    // Show a fixed 5-week (35-day) month view so the calendar is consistent
+    // in height and all weeks are visible at once.
+    final totalDays = 35;
     final days = List.generate(
       totalDays,
       (index) => start.add(Duration(days: index)),
@@ -467,17 +469,32 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               .toList(),
         ),
         const SizedBox(height: 12),
+        // Use LayoutBuilder to compute a childAspectRatio so 5 rows fit the
+        // available space and are fully visible without scrolling.
         Expanded(
-          child: GridView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 7,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
-            ),
-            itemCount: days.length,
-            itemBuilder: (context, index) {
-              final day = days[index];
+          child: LayoutBuilder(builder: (context, constraints) {
+            const int rows = 5;
+            const double spacing = 8.0;
+            final double totalVerticalSpacing = (rows - 1) * spacing;
+            final double cellHeight =
+                (constraints.maxHeight - totalVerticalSpacing) / rows;
+            final double totalHorizontalSpacing = (7 - 1) * spacing;
+            final double cellWidth =
+                (constraints.maxWidth - totalHorizontalSpacing) / 7;
+            final double childAspectRatio = cellWidth / cellHeight;
+
+            return GridView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate:
+                  SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 7,
+                crossAxisSpacing: spacing,
+                mainAxisSpacing: spacing,
+                childAspectRatio: childAspectRatio,
+              ),
+              itemCount: days.length,
+              itemBuilder: (context, index) {
+                final day = days[index];
               final isToday = _isSameDay(day, DateTime.now());
               final inMonth = day.month == date.month;
               final items = _itemsForDate(
