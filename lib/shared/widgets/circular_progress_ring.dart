@@ -57,7 +57,13 @@ class _RingPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = size.center(Offset.zero);
-    final radius = (size.shortestSide - strokeWidth) / 2;
+    // Account for the outer blur so the glow isn't clipped at the canvas edge.
+    // The blur sigma used below spreads pixels outside the stroke by roughly
+    // `blurSigma` pixels; reserve some padding so the effect stays inside
+    // the canvas bounds.
+    const double blurSigma = 6.0;
+    final double blurPadding = blurSigma * 2;
+    final radius = (size.shortestSide - strokeWidth - blurPadding) / 2;
 
     final backgroundPaint = Paint()
       ..color = backgroundColor
@@ -71,7 +77,7 @@ class _RingPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth
       ..strokeCap = StrokeCap.round
-      ..maskFilter = const MaskFilter.blur(BlurStyle.outer, 6);
+      ..maskFilter = MaskFilter.blur(BlurStyle.outer, blurSigma);
 
     final startAngle = -90 * (3.1415926535 / 180);
     final sweep = progress * 2 * 3.1415926535;
