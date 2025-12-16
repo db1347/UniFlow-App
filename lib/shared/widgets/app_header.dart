@@ -17,7 +17,9 @@ class AppHeader extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface.withOpacity(0.5),
+        // Use the scaffold background (opaque) so the header doesn't
+        // create a translucent band over the content below.
+        color: theme.scaffoldBackgroundColor,
         border: Border(
           bottom: BorderSide(color: theme.colorScheme.outline.withOpacity(0.3)),
         ),
