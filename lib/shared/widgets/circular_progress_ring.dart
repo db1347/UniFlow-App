@@ -74,12 +74,18 @@ class _RingPainter extends CustomPainter {
 
     // Draw a soft colored glow behind the progress arc so the halo is more
     // visible and matches the design reference (colored halo).
+    // Scale down glow strength for small rings so the halo is subtler.
+    final bool _isSmallRing = size.shortestSide <= 120;
+    final double glowOpacity = _isSmallRing ? 0.12 : 0.28;
+    final double glowStrokeMultiplier = _isSmallRing ? 1.2 : 2.0;
+    final double glowBlurMultiplier = _isSmallRing ? 1.1 : 1.6;
+
     final glowPaint = Paint()
-      ..color = color.withOpacity(0.28)
+      ..color = color.withOpacity(glowOpacity)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth * 2
+      ..strokeWidth = strokeWidth * glowStrokeMultiplier
       ..strokeCap = StrokeCap.round
-      ..maskFilter = MaskFilter.blur(BlurStyle.outer, blurSigma * 1.6);
+      ..maskFilter = MaskFilter.blur(BlurStyle.outer, blurSigma * glowBlurMultiplier);
 
     // Main arc should be sharp and fully colored; keep the blur only on the glow.
     final progressPaint = Paint()
