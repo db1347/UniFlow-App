@@ -72,6 +72,15 @@ class _RingPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
     canvas.drawCircle(center, radius, backgroundPaint);
 
+    // Draw a soft colored glow behind the progress arc so the halo is more
+    // visible and matches the design reference (colored halo).
+    final glowPaint = Paint()
+      ..color = color.withOpacity(0.28)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth * 2
+      ..strokeCap = StrokeCap.round
+      ..maskFilter = MaskFilter.blur(BlurStyle.outer, blurSigma * 1.6);
+
     final progressPaint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
@@ -81,6 +90,16 @@ class _RingPainter extends CustomPainter {
 
     final startAngle = -90 * (3.1415926535 / 180);
     final sweep = progress * 2 * 3.1415926535;
+
+    // Draw glow first, then main arc on top.
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      startAngle,
+      sweep,
+      false,
+      glowPaint,
+    );
+
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
       startAngle,
