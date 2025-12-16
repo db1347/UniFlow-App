@@ -21,13 +21,7 @@ class AppHeader extends ConsumerWidget {
         border: Border(
           bottom: BorderSide(color: theme.colorScheme.outline.withOpacity(0.3)),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
+
       ),
       child: Row(
         children: [
