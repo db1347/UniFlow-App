@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:math' as math;
 import 'package:intl/intl.dart';
 import 'package:students_app/core/constants/emoji_options.dart';
 import 'package:students_app/core/localization/translations.dart';
@@ -125,12 +126,18 @@ class _MiniCountdownCardState extends ConsumerState<MiniCountdownCard> {
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setSheetState) {
             return Padding(
               padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+                bottom:
+                    math.max(
+                      MediaQuery.of(context).viewInsets.bottom,
+                      MediaQuery.of(context).viewPadding.bottom,
+                    ) +
+                    16,
                 left: 16,
                 right: 16,
                 top: 24,

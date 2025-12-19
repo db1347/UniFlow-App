@@ -35,7 +35,7 @@ class AppHeader extends ConsumerWidget {
             ),
             alignment: Alignment.center,
             child: Text(
-              'CS',
+              'db',
               style: theme.textTheme.titleMedium?.copyWith(
                 color: theme.colorScheme.primary,
                 fontWeight: FontWeight.bold,

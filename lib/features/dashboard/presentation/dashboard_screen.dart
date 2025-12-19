@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:math' as math;
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:students_app/core/constants/emoji_options.dart';
@@ -50,11 +51,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       l10n.t('tapToSwitch'),
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withOpacity(0.7),
-                          ),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.7),
+                      ),
                     ),
                     const SizedBox(height: 24),
                     _MiniCountdownList(
@@ -100,108 +100,128 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       builder: (context) => StatefulBuilder(
         builder: (context, setSheetState) {
-          return Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom + 16,
-              left: 16,
-              right: 16,
-              top: 24,
+          return ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.8,
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.t('createNewTimer'),
-                  style: Theme.of(context).textTheme.titleLarge,
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.only(
+                  bottom:
+                      math.max(
+                        MediaQuery.of(context).viewInsets.bottom,
+                        MediaQuery.of(context).viewPadding.bottom,
+                      ) +
+                      24,
+                  left: 16,
+                  right: 16,
+                  top: 24,
                 ),
-                const SizedBox(height: 16),
-                if (todos.openTasksWithDueDate.isNotEmpty)
-                  DropdownButtonFormField<int>(
-                    decoration: InputDecoration(
-                      labelText: l10n.t('importFromTodo'),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.t('createNewTimer'),
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
-                    value: linkedTaskId,
-                    items: todos.openTasksWithDueDate
-                        .map(
-                          (task) => DropdownMenuItem<int>(
-                            value: task.id,
-                            child: Text(
-                              '${task.title} - ${DateFormat.yMd().format(task.dueDate!)}',
-                            ),
+                    const SizedBox(height: 16),
+                    if (todos.openTasksWithDueDate.isNotEmpty)
+                      DropdownButtonFormField<int>(
+                        isExpanded: true,
+                        decoration: InputDecoration(
+                          labelText: l10n.t('importFromTodo'),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
                           ),
-                        )
-                        .toList(),
-                    onChanged: (value) {
-                      setSheetState(() {
-                        linkedTaskId = value;
-                        if (value != null) {
-                          final task = todos.openTasksWithDueDate
-                              .firstWhere((element) => element.id == value);
-                          titleController.text = task.title;
-                          if (task.dueDate != null) {
-                            targetDate = task.dueDate!;
-                          }
-                        }
-                      });
-                    },
-                  ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: titleController,
-                  decoration: InputDecoration(
-                    labelText: l10n.t('timerTitle'),
-                    hintText: l10n.t('enterTimerTitle'),
-                  ),
+                        ),
+                        value: linkedTaskId,
+                        items: todos.openTasksWithDueDate
+                            .map(
+                              (task) => DropdownMenuItem<int>(
+                                value: task.id,
+                                child: Text(
+                                  '${task.title} - ${DateFormat.yMd().format(task.dueDate!)}',
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (value) {
+                          setSheetState(() {
+                            linkedTaskId = value;
+                            if (value != null) {
+                              final task = todos.openTasksWithDueDate
+                                  .firstWhere((element) => element.id == value);
+                              titleController.text = task.title;
+                              if (task.dueDate != null) {
+                                targetDate = task.dueDate!;
+                              }
+                            }
+                          });
+                        },
+                      ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: titleController,
+                      decoration: InputDecoration(
+                        labelText: l10n.t('timerTitle'),
+                        hintText: l10n.t('enterTimerTitle'),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _DatePickerField(
+                      label: l10n.t('targetDate'),
+                      initialDate: targetDate,
+                      onDateSelected: (date) => targetDate = date,
+                    ),
+                    const SizedBox(height: 12),
+                    _DatePickerField(
+                      label: l10n.t('startDate'),
+                      initialDate: startDate,
+                      onDateSelected: (date) => startDate = date,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      l10n.t('timerEmoji'),
+                      style: Theme.of(context).textTheme.labelLarge,
+                    ),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: emojiOptions.map((symbol) {
+                        final selected = emoji == symbol;
+                        return ChoiceChip(
+                          label: Text(symbol),
+                          selected: selected,
+                          onSelected: (_) =>
+                              setSheetState(() => emoji = symbol),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 16),
+                    FilledButton(
+                      onPressed: () {
+                        if (titleController.text.trim().isEmpty) return;
+                        countdownNotifier.addCountdown(
+                          title: titleController.text.trim(),
+                          targetDate: targetDate,
+                          startDate: startDate,
+                          emoji: emoji,
+                          linkedTaskId: linkedTaskId,
+                        );
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(l10n.t('create')),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
                 ),
-                const SizedBox(height: 12),
-                _DatePickerField(
-                  label: l10n.t('targetDate'),
-                  initialDate: targetDate,
-                  onDateSelected: (date) => targetDate = date,
-                ),
-                const SizedBox(height: 12),
-                _DatePickerField(
-                  label: l10n.t('startDate'),
-                  initialDate: startDate,
-                  onDateSelected: (date) => startDate = date,
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  l10n.t('timerEmoji'),
-                  style: Theme.of(context).textTheme.labelLarge,
-                ),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: emojiOptions.map((symbol) {
-                    final selected = emoji == symbol;
-                    return ChoiceChip(
-                      label: Text(symbol),
-                      selected: selected,
-                      onSelected: (_) =>
-                          setSheetState(() => emoji = symbol),
-                    );
-                  }).toList(),
-                ),
-                const SizedBox(height: 16),
-                FilledButton(
-                  onPressed: () {
-                    if (titleController.text.trim().isEmpty) return;
-                    countdownNotifier.addCountdown(
-                      title: titleController.text.trim(),
-                      targetDate: targetDate,
-                      startDate: startDate,
-                      emoji: emoji,
-                      linkedTaskId: linkedTaskId,
-                    );
-                    Navigator.of(context).pop();
-                  },
-                  child: Text(l10n.t('create')),
-                ),
-              ],
+              ),
             ),
           );
         },
@@ -327,8 +347,10 @@ class _TodoSummaryCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.check_circle_outline,
-                  color: Theme.of(context).colorScheme.primary),
+              Icon(
+                Icons.check_circle_outline,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               const SizedBox(width: 8),
               Text(
                 l10n.t('tasks'),
@@ -338,11 +360,10 @@ class _TodoSummaryCard extends StatelessWidget {
               Text(
                 '${openTasks.length} ${l10n.t('open').toLowerCase()} · ${completedTasks.length} ${l10n.t('done')}',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.7),
-                    ),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.7),
+                ),
               ),
             ],
           ),
@@ -351,50 +372,50 @@ class _TodoSummaryCard extends StatelessWidget {
             Text(
               l10n.t('noOpenTasks'),
               textAlign: TextAlign.center,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall
-                  ?.copyWith(color: Theme.of(context).colorScheme.onSurface),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
             )
           else
-            ...openTasks.take(4).map(
-              (task) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.radio_button_unchecked,
-                      size: 18,
-                      color: Theme.of(context).colorScheme.onSurface,
+            ...openTasks
+                .take(4)
+                .map(
+                  (task) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.radio_button_unchecked,
+                          size: 18,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            task.title,
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ),
+                        if (task.dueDate != null)
+                          Text(
+                            formatter.format(task.dueDate!),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface.withOpacity(0.7),
+                                ),
+                          ),
+                      ],
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        task.title,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ),
-                    if (task.dueDate != null)
-                      Text(
-                        formatter.format(task.dueDate!),
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurface
-                                  .withOpacity(0.7),
-                            ),
-                      ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
           if (openTasks.length > 4)
             Text(
               '+${openTasks.length - 4} ${l10n.t('moreTasks')}',
-              style: Theme.of(context)
-                  .textTheme
-                  .labelSmall
-                  ?.copyWith(color: Theme.of(context).colorScheme.primary),
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: Theme.of(context).colorScheme.primary,
+              ),
             ),
           const SizedBox(height: 12),
           OutlinedButton(

@@ -8,7 +8,12 @@ class CircularProgressRing extends StatelessWidget {
     this.strokeWidth = 10,
     this.child,
     this.color,
+    // Whether to render the soft glow/halo behind the progress arc.
+    // Set to false when a clean, sharp arc is desired (e.g. main timer).
+    this.showGlow = true,
   });
+
+  final bool showGlow;
 
   final double progress; // 0-1
   final double size;
@@ -32,6 +37,7 @@ class CircularProgressRing extends StatelessWidget {
               strokeWidth: strokeWidth,
               color: color ?? theme.colorScheme.primary,
               backgroundColor: theme.colorScheme.onSurface.withOpacity(0.15),
+              showGlow: showGlow,
             ),
           ),
           if (child != null) child!,
@@ -47,7 +53,10 @@ class _RingPainter extends CustomPainter {
     required this.strokeWidth,
     required this.color,
     required this.backgroundColor,
+    required this.showGlow,
   });
+
+  final bool showGlow;
 
   final double progress;
   final double strokeWidth;
@@ -76,21 +85,8 @@ class _RingPainter extends CustomPainter {
     // visible and matches the design reference (colored halo).
     // Scale down glow strength for small rings so the halo is subtler.
     final bool _isSmallRing = size.shortestSide <= 120;
-    final double glowOpacity = _isSmallRing ? 0.12 : 0.28;
-    final double glowStrokeMultiplier = _isSmallRing ? 1.2 : 2.0;
-    final double glowBlurMultiplier = _isSmallRing ? 1.1 : 1.6;
 
-    final glowPaint = Paint()
-      ..color = color.withOpacity(glowOpacity)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth * glowStrokeMultiplier
-      ..strokeCap = StrokeCap.round
-      ..maskFilter = MaskFilter.blur(
-        BlurStyle.outer,
-        blurSigma * glowBlurMultiplier,
-      );
-
-    // Main arc should be sharp and fully colored; keep the blur only on the glow.
+    // Main arc should be sharp and fully colored; the glow is optional.
     final progressPaint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
@@ -100,14 +96,30 @@ class _RingPainter extends CustomPainter {
     final startAngle = -90 * (3.1415926535 / 180);
     final sweep = progress * 2 * 3.1415926535;
 
-    // Draw glow first, then main arc on top.
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius),
-      startAngle,
-      sweep,
-      false,
-      glowPaint,
-    );
+    // Optionally draw the soft colored glow behind the progress arc.
+    if (showGlow) {
+      final double glowOpacity = _isSmallRing ? 0.12 : 0.28;
+      final double glowStrokeMultiplier = _isSmallRing ? 1.2 : 1.2;
+      final double glowBlurMultiplier = _isSmallRing ? 1.1 : 1.6;
+
+      final glowPaint = Paint()
+        ..color = color.withOpacity(glowOpacity)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = strokeWidth * glowStrokeMultiplier
+        ..strokeCap = StrokeCap.round
+        ..maskFilter = MaskFilter.blur(
+          BlurStyle.outer,
+          blurSigma * glowBlurMultiplier,
+        );
+
+      canvas.drawArc(
+        Rect.fromCircle(center: center, radius: radius),
+        startAngle,
+        sweep,
+        false,
+        glowPaint,
+      );
+    }
 
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),

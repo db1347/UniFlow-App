@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:students_app/core/providers/shared_prefs_provider.dart';
 import 'package:students_app/features/todos/domain/task.dart';
-import 'package:students_app/features/todos/application/home_widget_helper.dart';
 
 final todoControllerProvider = NotifierProvider<TodoController, TodoState>(
   TodoController.new,
@@ -83,12 +82,6 @@ class TodoController extends Notifier<TodoState> {
     final payload =
         state.tasks.map((task) => task.toJson()).toList(growable: false);
     prefs.setString(_storageKey, jsonEncode(payload));
-    // Update home screen widget with latest tasks (best-effort).
-    try {
-      // ignore: unawaited_futures
-      HomeWidgetHelper.saveTodosAndUpdate(state.tasks);
-    } catch (_) {}
-
   }
 
   List<Task> get _defaultTasks => [

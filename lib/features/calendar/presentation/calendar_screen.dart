@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'dart:math' as math;
 import 'package:students_app/core/localization/translations.dart';
 import 'package:students_app/core/utils/color_utils.dart';
 import 'package:students_app/features/countdowns/application/countdown_controller.dart';
@@ -40,6 +41,15 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     final todos = ref.watch(todoControllerProvider);
     final events = ref.watch(eventControllerProvider);
     final l10n = ref.watch(localizationProvider);
+    final media = MediaQuery.of(context);
+    final double fabExtra = _fabExpanded ? 160.0 : 96.0;
+    // Keep outer padding modest so the calendar has enough vertical space.
+    // The GridView itself has bottom padding to keep cells visible above
+    // the FAB and bottom navigation, so we only need a small outer gap here.
+    final double bottomPad = (16.0 + media.viewPadding.bottom + 8.0).clamp(
+      12.0,
+      media.size.height * 0.2,
+    );
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -48,8 +58,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
             Expanded(
               child: Stack(
                 children: [
+                  // Dynamic bottom padding is computed above to avoid hardcoding a value
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 140),
+                    padding: EdgeInsets.fromLTRB(16, 16, 16, bottomPad),
                     child: Column(
                       children: [
                         _ViewModeSelector(
@@ -445,8 +456,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   }) {
     final firstDay = DateTime(date.year, date.month, 1);
     final start = firstDay.subtract(Duration(days: firstDay.weekday % 7));
-    // Show a fixed 5-week (35-day) month view so the calendar is consistent
-    // in height and all weeks are visible at once.
+    // Show a fixed 5-week (35-day) month view to keep the month
+    // layout consistent and prevent a sixth week from appearing.
     final totalDays = 35;
     final days = List.generate(
       totalDays,
@@ -474,18 +485,38 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         Expanded(
           child: LayoutBuilder(
             builder: (context, constraints) {
+              // Fixed 5-row grid (no sixth week). Keep layout simple
+              // and non-scrollable so the month always occupies the same
+              // vertical space.
               const int rows = 5;
               const double spacing = 8.0;
               final double totalVerticalSpacing = (rows - 1) * spacing;
+
+              // Recompute media/fabExtra locally so the grid has bottom
+              // padding large enough to avoid being obscured by the FAB
+              // or bottom navigation.
+              final media = MediaQuery.of(context);
+              final double fabExtra = _fabExpanded ? 160.0 : 96.0;
+
               final double cellHeight =
                   (constraints.maxHeight - totalVerticalSpacing) / rows;
+
               final double totalHorizontalSpacing = (7 - 1) * spacing;
               final double cellWidth =
                   (constraints.maxWidth - totalHorizontalSpacing) / 7;
               final double childAspectRatio = cellWidth / cellHeight;
 
-              return GridView.builder(
+              final Widget grid = GridView.builder(
+                padding: EdgeInsets.only(
+                  bottom:
+                      fabExtra +
+                      media.viewPadding.bottom +
+                      kBottomNavigationBarHeight +
+                      40,
+                ),
+                // Non-scrollable fixed grid
                 physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 7,
                   crossAxisSpacing: spacing,
@@ -495,6 +526,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 itemCount: days.length,
                 itemBuilder: (context, index) {
                   final day = days[index];
+
                   final isToday = _isSameDay(day, DateTime.now());
                   final inMonth = day.month == date.month;
                   final items = _itemsForDate(
@@ -533,22 +565,31 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                             '${day.day}',
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
-                          const Spacer(),
-                          Wrap(
-                            spacing: 2,
-                            children: items
-                                .take(3)
-                                .map(
-                                  (item) => Container(
-                                    width: 6,
-                                    height: 6,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: item.color,
-                                    ),
-                                  ),
-                                )
-                                .toList(),
+                          // Use a small fixed gap + a Flexible container for the dots
+                          // so they can shrink if the available height is very small
+                          // and avoid tiny pixel overflow due to rounding.
+                          const SizedBox(height: 2),
+                          Flexible(
+                            child: Align(
+                              alignment: Alignment.bottomLeft,
+                              child: Wrap(
+                                spacing: 2,
+                                runSpacing: 2,
+                                children: items
+                                    .take(3)
+                                    .map(
+                                      (item) => Container(
+                                        width: 6,
+                                        height: 6,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: item.color,
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -556,6 +597,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                   );
                 },
               );
+
+              return grid;
             },
           ),
         ),
@@ -576,9 +619,15 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       builder: (context) => Padding(
         padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+          bottom:
+              math.max(
+                MediaQuery.of(context).viewInsets.bottom,
+                MediaQuery.of(context).viewPadding.bottom,
+              ) +
+              16,
           left: 16,
           right: 16,
           top: 24,
@@ -742,9 +791,15 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       builder: (context) => Padding(
         padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+          bottom:
+              math.max(
+                MediaQuery.of(context).viewInsets.bottom,
+                MediaQuery.of(context).viewPadding.bottom,
+              ) +
+              16,
           left: 16,
           right: 16,
           top: 24,
@@ -937,9 +992,15 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       builder: (context) => Padding(
         padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+          bottom:
+              math.max(
+                MediaQuery.of(context).viewInsets.bottom,
+                MediaQuery.of(context).viewPadding.bottom,
+              ) +
+              16,
           left: 16,
           right: 16,
           top: 24,

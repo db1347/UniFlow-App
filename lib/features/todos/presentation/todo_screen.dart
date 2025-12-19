@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'dart:math' as math;
 import 'package:students_app/core/localization/app_language.dart';
 import 'package:students_app/core/localization/translations.dart';
 import 'package:students_app/features/settings/application/settings_controller.dart';
@@ -8,7 +9,6 @@ import 'package:students_app/features/todos/application/todo_controller.dart';
 import 'package:students_app/features/todos/domain/task.dart';
 import 'package:students_app/shared/widgets/app_header.dart';
 import 'package:students_app/shared/widgets/bottom_nav.dart';
-import 'package:students_app/shared/widgets/todo_list_widget.dart';
 
 class TodoScreen extends ConsumerStatefulWidget {
   const TodoScreen({super.key});
@@ -95,9 +95,15 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       builder: (context) => Padding(
         padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+          bottom:
+              math.max(
+                MediaQuery.of(context).viewInsets.bottom,
+                MediaQuery.of(context).viewPadding.bottom,
+              ) +
+              16,
           left: 16,
           right: 16,
           top: 24,
@@ -119,8 +125,7 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
             ),
             const SizedBox(height: 12),
             _OptionalDateField(
-              label:
-                  '${l10n.t('dueDate')} (${l10n.t('optional')})',
+              label: '${l10n.t('dueDate')} (${l10n.t('optional')})',
               onDateChanged: (date) => dueDate = date,
             ),
             const SizedBox(height: 12),
@@ -217,6 +222,7 @@ class _TaskSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dateFormatter = DateFormat('MMM d', localeCode);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -228,32 +234,114 @@ class _TaskSection extends StatelessWidget {
               color: Theme.of(context).colorScheme.primary,
             ),
             const SizedBox(width: 8),
-            Text(
-              title,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
+            Text(title, style: Theme.of(context).textTheme.titleMedium),
           ],
         ),
         const SizedBox(height: 12),
-        TodoListWidget(
-          tasks: tasks,
-          localeCode: localeCode,
-          l10n: l10n,
-          onToggle: onToggle,
-          onDelete: onDelete,
-          emptyMessage: isOpenSection ? l10n.t('noOpenTasks') : l10n.t('noCompletedTasks'),
-        ),
+        if (tasks.isEmpty)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Text(
+              isOpenSection
+                  ? l10n.t('noOpenTasks')
+                  : l10n.t('noCompletedTasks'),
+              textAlign: TextAlign.center,
+            ),
+          )
+        else
+          ...tasks.map(
+            (task) => Card(
+              color: Theme.of(context).colorScheme.surface,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed: () => onToggle(task),
+                      icon: Icon(
+                        task.completed
+                            ? Icons.check_circle
+                            : Icons.radio_button_unchecked,
+                        color: task.completed
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withOpacity(0.6),
+                      ),
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            task.title,
+                            style: Theme.of(context).textTheme.bodyLarge
+                                ?.copyWith(
+                                  decoration: task.completed
+                                      ? TextDecoration.lineThrough
+                                      : null,
+                                ),
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              if (task.dueDate != null)
+                                Row(
+                                  children: [
+                                    const Icon(Icons.calendar_today, size: 14),
+                                    const SizedBox(width: 4),
+                                    Text(dateFormatter.format(task.dueDate!)),
+                                  ],
+                                ),
+                              if (task.repeat != TaskRepeat.none) ...[
+                                const SizedBox(width: 12),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.repeat, size: 14),
+                                    const SizedBox(width: 4),
+                                    Text(_repeatLabel(task.repeat, l10n)),
+                                  ],
+                                ),
+                              ],
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => onDelete(task),
+                      icon: const Icon(Icons.delete_outline),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
       ],
     );
   }
 
+  String _repeatLabel(TaskRepeat repeat, AppLocalizations l10n) {
+    switch (repeat) {
+      case TaskRepeat.daily:
+        return l10n.t('daily');
+      case TaskRepeat.weekly:
+        return l10n.t('weekly');
+      case TaskRepeat.monthly:
+        return l10n.t('monthly');
+      case TaskRepeat.none:
+        return l10n.t('noRepeat');
+    }
+  }
 }
 
 class _OptionalDateField extends StatefulWidget {
-  const _OptionalDateField({
-    required this.label,
-    required this.onDateChanged,
-  });
+  const _OptionalDateField({required this.label, required this.onDateChanged});
 
   final String label;
   final ValueChanged<DateTime?> onDateChanged;
@@ -267,8 +355,9 @@ class _OptionalDateFieldState extends State<_OptionalDateField> {
 
   @override
   Widget build(BuildContext context) {
-    final text =
-        _value == null ? '-' : DateFormat('yyyy-MM-dd').format(_value!);
+    final text = _value == null
+        ? '-'
+        : DateFormat('yyyy-MM-dd').format(_value!);
     return ListTile(
       contentPadding: EdgeInsets.zero,
       title: Text(widget.label),
