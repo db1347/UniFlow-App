@@ -114,12 +114,19 @@ class _MainCountdownState extends ConsumerState<MainCountdown> {
         value == 1 ? l10n.t('second_singular') : l10n.t('seconds'),
     };
 
+    // Format the displayed numeric value with locale-aware grouping (e.g. 1,000)
+    final formattedValue = NumberFormat.decimalPattern(
+      localeCode,
+    ).format(value);
+
     return GestureDetector(
       onTap: _cycleUnit,
       child: CircularProgressRing(
         progress: _snapshot.progress,
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
               formattedDate,
@@ -128,11 +135,39 @@ class _MainCountdownState extends ConsumerState<MainCountdown> {
               ),
             ),
             const SizedBox(height: 8),
-            Text(
-              value.toString(),
-              style: Theme.of(
-                context,
-              ).textTheme.displayLarge?.copyWith(fontWeight: FontWeight.bold),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final baseStyle = Theme.of(
+                  context,
+                ).textTheme.displayLarge?.copyWith(fontWeight: FontWeight.bold);
+                final baseFontSize = baseStyle?.fontSize ?? 64.0;
+
+                // Measure at base size and scale down if needed
+                final tp = TextPainter(
+                  text: TextSpan(
+                    text: formattedValue,
+                    style: baseStyle?.copyWith(fontSize: baseFontSize),
+                  ),
+                  textDirection: Directionality.of(context),
+                );
+                tp.layout();
+
+                double fontSize = baseFontSize;
+                final maxWidth = constraints.maxWidth.isFinite
+                    ? constraints.maxWidth
+                    : baseFontSize * 6;
+                if (tp.width > maxWidth && tp.width > 0) {
+                  fontSize = baseFontSize * (maxWidth / tp.width);
+                }
+
+                return Text(
+                  formattedValue,
+                  style: baseStyle?.copyWith(fontSize: fontSize),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                );
+              },
             ),
             const SizedBox(height: 4),
             Text(

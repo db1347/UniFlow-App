@@ -11,7 +11,7 @@ class BottomNav extends ConsumerWidget {
     final l10n = ref.watch(localizationProvider);
     final items = [
       _BottomNavItem(
-        icon: Icons.person_outline,
+        icon: Icons.settings_outlined,
         label: l10n.t('settings'),
         path: '/settings',
       ),
@@ -21,7 +21,7 @@ class BottomNav extends ConsumerWidget {
         path: '/calendar',
       ),
       _BottomNavItem(
-        icon: Icons.view_module_outlined,
+        icon: Icons.done_all_outlined,
         label: l10n.t('todo'),
         path: '/todo',
       ),

@@ -30,12 +30,12 @@ class AppHeader extends ConsumerWidget {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: theme.colorScheme.primary.withOpacity(0.1),
+              color: theme.colorScheme.primary.withOpacity(0),
               borderRadius: BorderRadius.circular(12),
             ),
             alignment: Alignment.center,
             child: Text(
-              'db',
+              ' ',
               style: theme.textTheme.titleMedium?.copyWith(
                 color: theme.colorScheme.primary,
                 fontWeight: FontWeight.bold,
@@ -50,7 +50,7 @@ class AppHeader extends ConsumerWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
-              'COUNTDOWN',
+              'UniFlow',
               style: theme.textTheme.labelLarge?.copyWith(
                 color: theme.colorScheme.onPrimary,
                 letterSpacing: 1.1,

@@ -40,7 +40,14 @@ class CircularProgressRing extends StatelessWidget {
               showGlow: showGlow,
             ),
           ),
-          if (child != null) child!,
+          if (child != null)
+            Center(
+              child: SizedBox(
+                width: (size - strokeWidth * 4).clamp(0.0, size),
+                height: (size - strokeWidth * 4).clamp(0.0, size),
+                child: child,
+              ),
+            ),
         ],
       ),
     );
