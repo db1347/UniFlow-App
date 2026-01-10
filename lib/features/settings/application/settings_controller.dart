@@ -7,9 +7,7 @@ import 'package:students_app/core/theme/app_theme.dart';
 import 'package:students_app/features/settings/data/settings_state.dart';
 
 final settingsControllerProvider =
-    NotifierProvider<SettingsController, SettingsState>(
-  SettingsController.new,
-);
+    NotifierProvider<SettingsController, SettingsState>(SettingsController.new);
 
 class SettingsController extends Notifier<SettingsState> {
   static const _storageKey = 'app-settings';
@@ -42,6 +40,16 @@ class SettingsController extends Notifier<SettingsState> {
 
   void setMainStartDate(DateTime date) {
     state = state.copyWith(mainStartDate: date);
+    _persist();
+  }
+
+  void setBackgroundOpacity(double opacity) {
+    state = state.copyWith(backgroundOpacity: opacity);
+    _persist();
+  }
+
+  void setFontSize(double size) {
+    state = state.copyWith(fontSize: size);
     _persist();
   }
 

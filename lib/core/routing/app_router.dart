@@ -37,6 +37,5 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     ],
     errorBuilder: (context, state) => const NotFoundScreen(),
     debugLogDiagnostics: false,
-    routerNeglect: true,
   );
 });

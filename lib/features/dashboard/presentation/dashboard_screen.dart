@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:math' as math;
 import 'package:go_router/go_router.dart';
@@ -22,6 +23,28 @@ class DashboardScreen extends ConsumerStatefulWidget {
 }
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
+  Future<bool> _showExitDialog() async {
+    final l10n = ref.read(localizationProvider);
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.t('exitApp')),
+        content: Text(l10n.t('exitAppConfirm')),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(l10n.t('cancel')),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(l10n.t('yes')),
+          ),
+        ],
+      ),
+    );
+    return result ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final settings = ref.watch(settingsControllerProvider);
@@ -29,61 +52,72 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final todos = ref.watch(todoControllerProvider);
     final l10n = ref.watch(localizationProvider);
 
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            const AppHeader(),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(16, 24, 16, 120),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    MainCountdown(
-                      targetDate: settings.mainTargetDate,
-                      startDate: settings.mainStartDate,
-                      language: settings.language,
-                      label: '${l10n.t('until')} ${l10n.t('graduation')}',
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      l10n.t('tapToSwitch'),
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSurface.withOpacity(0.7),
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        if (!didPop) {
+          final shouldExit = await _showExitDialog();
+          if (shouldExit && context.mounted) {
+            SystemNavigator.pop();
+          }
+        }
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: Column(
+            children: [
+              const AppHeader(),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 120),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      MainCountdown(
+                        targetDate: settings.mainTargetDate,
+                        startDate: settings.mainStartDate,
+                        language: settings.language,
+                        label: '${l10n.t('until')} ${l10n.t('graduation')}',
                       ),
-                    ),
-                    const SizedBox(height: 24),
-                    _MiniCountdownList(
-                      countdowns: countdowns,
-                      onAddPressed: _openAddCountdownSheet,
-                      onUpdate: (updated) {
-                        ref
+                      const SizedBox(height: 12),
+                      Text(
+                        l10n.t('tapToSwitch'),
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacity(0.7),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      _MiniCountdownList(
+                        countdowns: countdowns,
+                        onAddPressed: _openAddCountdownSheet,
+                        onUpdate: (updated) {
+                          ref
+                              .read(countdownControllerProvider.notifier)
+                              .updateCountdown(updated.id, updated);
+                        },
+                        onDelete: (id) => ref
                             .read(countdownControllerProvider.notifier)
-                            .updateCountdown(updated.id, updated);
-                      },
-                      onDelete: (id) => ref
-                          .read(countdownControllerProvider.notifier)
-                          .deleteCountdown(id),
-                      l10n: l10n,
-                    ),
-                    const SizedBox(height: 32),
-                    _TodoSummaryCard(
-                      todos: todos,
-                      l10n: l10n,
-                      onViewAll: () => context.go('/todo'),
-                    ),
-                  ],
+                            .deleteCountdown(id),
+                        l10n: l10n,
+                      ),
+                      const SizedBox(height: 32),
+                      _TodoSummaryCard(
+                        todos: todos,
+                        l10n: l10n,
+                        onViewAll: () => context.go('/todo'),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
+        bottomNavigationBar: const BottomNav(),
       ),
-      bottomNavigationBar: const BottomNav(),
     );
   }
 

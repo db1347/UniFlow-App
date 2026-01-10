@@ -64,6 +64,11 @@ android {
     }
 }
 
+dependencies {
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
+    implementation("com.google.code.gson:gson:2.10.1")
+}
+
 flutter {
     source = "../.."
 }

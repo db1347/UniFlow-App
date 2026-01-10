@@ -34,16 +34,19 @@ class Task extends Equatable {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'dueDate': dueDate?.toIso8601String(),
-        'repeat': repeat.name,
-        'completed': completed,
-      };
+    'id': id,
+    'title': title,
+    'dueDate': dueDate?.toIso8601String(),
+    'repeat': repeat.name,
+    'completed': completed,
+  };
 
   factory Task.fromJson(Map<String, dynamic> json) {
+    final rawId = json['id'];
+    final parsedId = rawId is int ? rawId : (rawId is num ? rawId.toInt() : 0);
+
     return Task(
-      id: json['id'] as int,
+      id: parsedId,
       title: json['title'] as String? ?? '',
       dueDate: json['dueDate'] != null
           ? DateTime.tryParse(json['dueDate'] as String)

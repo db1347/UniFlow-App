@@ -126,39 +126,47 @@ class AppHeader extends ConsumerWidget {
               position: offsetTween.animate(
                 CurvedAnimation(parent: animation, curve: Curves.easeInOut),
               ),
-              child: Material(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(24),
-                child: SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          translations.t('menu'),
-                          style: Theme.of(context).textTheme.titleLarge
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 12),
-                        for (final item in items)
-                          ListTile(
-                            leading: Icon(
-                              item.icon,
-                              color: item.path == currentLocation
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Theme.of(context).colorScheme.onSurface,
-                            ),
-                            title: Text(item.label),
-                            onTap: () {
-                              Navigator.of(context).pop();
-                              if (currentLocation != item.path) {
-                                context.go(item.path);
-                              }
-                            },
+              child: PopScope(
+                canPop: true,
+                onPopInvoked: (didPop) {
+                  if (didPop) {
+                    Navigator.of(context).pop();
+                  }
+                },
+                child: Material(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(24),
+                  child: SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            translations.t('menu'),
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(fontWeight: FontWeight.bold),
                           ),
-                      ],
+                          const SizedBox(height: 12),
+                          for (final item in items)
+                            ListTile(
+                              leading: Icon(
+                                item.icon,
+                                color: item.path == currentLocation
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(context).colorScheme.onSurface,
+                              ),
+                              title: Text(item.label),
+                              onTap: () {
+                                Navigator.of(context).pop();
+                                if (currentLocation != item.path) {
+                                  context.go(item.path);
+                                }
+                              },
+                            ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'dart:math' as math;
 import 'package:students_app/core/localization/app_language.dart';
@@ -18,70 +19,133 @@ class TodoScreen extends ConsumerStatefulWidget {
 }
 
 class _TodoScreenState extends ConsumerState<TodoScreen> {
+  void _handlePendingEdit(int? next) {
+    if (next == null) return;
+
+    // find task and open sheet after build
+    final tasks = ref.read(todoControllerProvider).tasks;
+    final task = tasks.firstWhere(
+      (t) => t.id == next,
+      orElse: () => const Task(id: -1, title: ''),
+    );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (task.id != -1) {
+        debugPrint('TodoScreen: opening edit sheet for $next');
+        _openEditSheet(task);
+      }
+      ref.read(pendingEditTodoIdProvider.notifier).state = null;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    ref.listen<int?>(pendingEditTodoIdProvider, (previous, next) {
+      debugPrint(
+        'TodoScreen: pendingEditTodoId change prev=$previous next=$next',
+      );
+      _handlePendingEdit(next);
+    });
+
+    // Handle a pending edit that might already be set before this screen builds
+    final pendingNow = ref.read(pendingEditTodoIdProvider);
+    if (pendingNow != null) {
+      debugPrint('TodoScreen: pendingEditTodoId initial=$pendingNow');
+      _handlePendingEdit(pendingNow);
+    }
+
+    // Listen for add task request from widget
+    ref.listen<bool>(pendingAddTaskProvider, (previous, next) {
+      if (next) {
+        debugPrint('TodoScreen: add task requested from widget (listener)');
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _openCreateSheet();
+        });
+      }
+    });
+
+    // Check if add task was already requested before listener was registered
+    final pendingAddTask = ref.watch(pendingAddTaskProvider);
+    if (pendingAddTask) {
+      debugPrint('TodoScreen: add task already pending on build');
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _openCreateSheet();
+      });
+    }
+
     final todos = ref.watch(todoControllerProvider);
     final settings = ref.watch(settingsControllerProvider);
     final l10n = ref.watch(localizationProvider);
     final localeCode = settings.language.locale.toLanguageTag();
 
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            const AppHeader(),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(16, 24, 16, 120),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.t('todo'),
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
-                    const SizedBox(height: 16),
-                    FilledButton.icon(
-                      onPressed: _openCreateSheet,
-                      icon: const Icon(Icons.add),
-                      label: Text(l10n.t('addTask')),
-                      style: FilledButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 48),
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if (!didPop) {
+          context.go('/');
+        }
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: Column(
+            children: [
+              const AppHeader(),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 120),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.t('todo'),
+                        style: Theme.of(context).textTheme.headlineMedium,
                       ),
-                    ),
-                    const SizedBox(height: 24),
-                    _TaskSection(
-                      title: '${l10n.t('open')} (${todos.openTasks.length})',
-                      isOpenSection: true,
-                      tasks: todos.openTasks,
-                      localeCode: localeCode,
-                      l10n: l10n,
-                      onToggle: (task) => ref
-                          .read(todoControllerProvider.notifier)
-                          .toggleTask(task.id),
-                      onDelete: (task) => _confirmDelete(task.id),
-                    ),
-                    const SizedBox(height: 24),
-                    _TaskSection(
-                      title:
-                          '${l10n.t('completed')} (${todos.completedTasks.length})',
-                      isOpenSection: false,
-                      tasks: todos.completedTasks,
-                      localeCode: localeCode,
-                      l10n: l10n,
-                      onToggle: (task) => ref
-                          .read(todoControllerProvider.notifier)
-                          .toggleTask(task.id),
-                      onDelete: (task) => _confirmDelete(task.id),
-                    ),
-                  ],
+                      const SizedBox(height: 16),
+                      FilledButton.icon(
+                        onPressed: _openCreateSheet,
+                        icon: const Icon(Icons.add),
+                        label: Text(l10n.t('addTask')),
+                        style: FilledButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 48),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      _TaskSection(
+                        title: '${l10n.t('open')} (${todos.openTasks.length})',
+                        isOpenSection: true,
+                        tasks: todos.openTasks,
+                        localeCode: localeCode,
+                        l10n: l10n,
+                        onToggle: (task) => ref
+                            .read(todoControllerProvider.notifier)
+                            .toggleTask(task.id),
+                        onEdit: (task) => _openEditSheet(task),
+                        onDelete: (task) => _confirmDelete(task.id),
+                      ),
+                      const SizedBox(height: 24),
+                      _TaskSection(
+                        title:
+                            '${l10n.t('completed')} (${todos.completedTasks.length})',
+                        isOpenSection: false,
+                        tasks: todos.completedTasks,
+                        localeCode: localeCode,
+                        l10n: l10n,
+                        onToggle: (task) => ref
+                            .read(todoControllerProvider.notifier)
+                            .toggleTask(task.id),
+                        onEdit: (task) => _openEditSheet(task),
+                        onDelete: (task) => _confirmDelete(task.id),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
+        bottomNavigationBar: const BottomNav(),
       ),
-      bottomNavigationBar: const BottomNav(),
     );
   }
 
@@ -161,6 +225,11 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
         ),
       ),
     );
+
+    // Reset the provider state after the sheet closes
+    if (mounted) {
+      ref.read(pendingAddTaskProvider.notifier).state = false;
+    }
   }
 
   String _repeatLabel(TaskRepeat repeat, AppLocalizations l10n) {
@@ -174,6 +243,95 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
       case TaskRepeat.none:
         return l10n.t('noRepeat');
     }
+  }
+
+  Future<void> _openEditSheet(Task task) async {
+    final l10n = ref.read(localizationProvider);
+    final todoNotifier = ref.read(todoControllerProvider.notifier);
+    final titleController = TextEditingController(text: task.title);
+    DateTime? dueDate = task.dueDate;
+    TaskRepeat repeat = task.repeat;
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          bottom:
+              math.max(
+                MediaQuery.of(context).viewInsets.bottom,
+                MediaQuery.of(context).viewPadding.bottom,
+              ) +
+              16,
+          left: 16,
+          right: 16,
+          top: 24,
+        ),
+        child: StatefulBuilder(
+          builder: (context, setSheetState) => Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                l10n.t('editTask'),
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: titleController,
+                decoration: InputDecoration(
+                  labelText: l10n.t('taskTitle'),
+                  hintText: l10n.t('enterTaskTitle'),
+                ),
+              ),
+              const SizedBox(height: 12),
+              _OptionalDateField(
+                initialDate: dueDate,
+                label: '${l10n.t('dueDate')} (${l10n.t('optional')})',
+                onDateChanged: (date) => setSheetState(() => dueDate = date),
+              ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<TaskRepeat>(
+                value: repeat,
+                onChanged: (value) =>
+                    setSheetState(() => repeat = value ?? TaskRepeat.none),
+                decoration: InputDecoration(
+                  labelText: '${l10n.t('repeat')} (${l10n.t('optional')})',
+                ),
+                items: TaskRepeat.values
+                    .map(
+                      (value) => DropdownMenuItem<TaskRepeat>(
+                        value: value,
+                        child: Text(_repeatLabel(value, l10n)),
+                      ),
+                    )
+                    .toList(),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: () {
+                        if (titleController.text.trim().isEmpty) return;
+                        todoNotifier.updateTask(
+                          id: task.id,
+                          title: titleController.text.trim(),
+                          dueDate: dueDate,
+                          repeat: repeat,
+                        );
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(l10n.t('save')),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> _confirmDelete(int id) async {
@@ -209,6 +367,7 @@ class _TaskSection extends StatelessWidget {
     required this.localeCode,
     required this.l10n,
     required this.onToggle,
+    required this.onEdit,
     required this.onDelete,
   });
 
@@ -218,6 +377,7 @@ class _TaskSection extends StatelessWidget {
   final String localeCode;
   final AppLocalizations l10n;
   final ValueChanged<Task> onToggle;
+  final ValueChanged<Task> onEdit;
   final ValueChanged<Task> onDelete;
 
   @override
@@ -314,6 +474,10 @@ class _TaskSection extends StatelessWidget {
                       ),
                     ),
                     IconButton(
+                      onPressed: () => onEdit(task),
+                      icon: const Icon(Icons.edit),
+                    ),
+                    IconButton(
                       onPressed: () => onDelete(task),
                       icon: const Icon(Icons.delete_outline),
                     ),
@@ -341,17 +505,28 @@ class _TaskSection extends StatelessWidget {
 }
 
 class _OptionalDateField extends StatefulWidget {
-  const _OptionalDateField({required this.label, required this.onDateChanged});
+  const _OptionalDateField({
+    required this.label,
+    required this.onDateChanged,
+    this.initialDate,
+  });
 
   final String label;
   final ValueChanged<DateTime?> onDateChanged;
+  final DateTime? initialDate;
 
   @override
   State<_OptionalDateField> createState() => _OptionalDateFieldState();
 }
 
 class _OptionalDateFieldState extends State<_OptionalDateField> {
-  DateTime? _value;
+  late DateTime? _value;
+
+  @override
+  void initState() {
+    super.initState();
+    _value = widget.initialDate;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -367,7 +542,7 @@ class _OptionalDateFieldState extends State<_OptionalDateField> {
         onPressed: () async {
           final picked = await showDatePicker(
             context: context,
-            initialDate: DateTime.now(),
+            initialDate: _value ?? DateTime.now(),
             firstDate: DateTime(2000),
             lastDate: DateTime(2100),
           );

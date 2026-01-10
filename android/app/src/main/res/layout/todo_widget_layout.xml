@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#CC1a1a1a">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/widget_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingVertical="12dp"
+            android:paddingHorizontal="16dp"
+            android:background="#292929"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Open Tasks"
+                android:textSize="16sp"
+                android:textStyle="normal"
+                android:textColor="#FFFFFF" />
+
+            <ImageButton
+                android:id="@+id/widget_add_button"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_add_material"
+                android:contentDescription="Add Task"
+                android:background="@android:color/transparent"
+                android:scaleType="centerInside"
+                android:layout_marginEnd="8dp" />
+
+            <ImageButton
+                android:id="@+id/widget_settings_button"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_settings_material"
+                android:contentDescription="Settings"
+                android:background="@android:color/transparent"
+                android:scaleType="centerInside" />
+
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/todo_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@null"
+            android:dividerHeight="0dp"
+            android:paddingHorizontal="8dp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="No open tasks"
+        android:textSize="12sp"
+        android:textColor="#FFFFFF"
+        android:visibility="gone" />
+
+</FrameLayout>

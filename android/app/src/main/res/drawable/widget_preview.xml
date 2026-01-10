@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="512dp"
+    android:height="512dp"
+    android:viewportWidth="512"
+    android:viewportHeight="512">
+    <!-- Background -->
+    <path
+        android:fillColor="#F5F5F5"
+        android:pathData="M0,0h512v512h-512z" />
+    
+    <!-- Header bar -->
+    <path
+        android:fillColor="#E0E0E0"
+        android:pathData="M0,0h512v80h-512z" />
+    
+    <!-- Title line (representing text) -->
+    <path
+        android:fillColor="#424242"
+        android:pathData="M20,30h200v15h-200z" />
+    
+    <!-- Divider -->
+    <path
+        android:fillColor="#BDBDBD"
+        android:pathData="M20,100h472v2h-472z" />
+    
+    <!-- Item 1 -->
+    <path
+        android:fillColor="#1976D2"
+        android:pathData="M20,120h20v20h-20z" />
+    <path
+        android:fillColor="#424242"
+        android:pathData="M50,125h200v10h-200z" />
+    
+    <!-- Item 2 -->
+    <path
+        android:fillColor="#1976D2"
+        android:pathData="M20,160h20v20h-20z" />
+    <path
+        android:fillColor="#424242"
+        android:pathData="M50,165h200v10h-200z" />
+    
+    <!-- Item 3 -->
+    <path
+        android:fillColor="#1976D2"
+        android:pathData="M20,200h20v20h-20z" />
+    <path
+        android:fillColor="#424242"
+        android:pathData="M50,205h200v10h-200z" />
+</vector>

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:students_app/core/localization/app_language.dart';
 import 'package:students_app/core/localization/translations.dart';
 import 'package:students_app/core/theme/app_theme.dart';
@@ -16,83 +17,93 @@ class SettingsScreen extends ConsumerWidget {
     final l10n = ref.watch(localizationProvider);
     final themeNotifier = ref.read(settingsControllerProvider.notifier);
 
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            const AppHeader(),
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(16, 24, 16, 120),
-                children: [
-                  Text(
-                    l10n.t('settings'),
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    l10n.t('language'),
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 12),
-                  ...AppLanguage.values.map(
-                    (language) => Card(
-                      child: ListTile(
-                        leading: Icon(
-                          settings.language == language
-                              ? Icons.radio_button_checked
-                              : Icons.radio_button_off,
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if (!didPop) {
+          context.go('/');
+        }
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: Column(
+            children: [
+              const AppHeader(),
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 120),
+                  children: [
+                    Text(
+                      l10n.t('settings'),
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      l10n.t('language'),
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 12),
+                    ...AppLanguage.values.map(
+                      (language) => Card(
+                        child: ListTile(
+                          leading: Icon(
+                            settings.language == language
+                                ? Icons.radio_button_checked
+                                : Icons.radio_button_off,
+                          ),
+                          title: Text(
+                            language == AppLanguage.en ? 'English' : 'עברית',
+                          ),
+                          onTap: () => themeNotifier.setLanguage(language),
                         ),
-                        title: Text(
-                          language == AppLanguage.en ? 'English' : 'עברית',
-                        ),
-                        onTap: () => themeNotifier.setLanguage(language),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    l10n.t('theme'),
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 12),
-                  ...ThemeType.values.map(
-                    (theme) => Card(
-                      child: ListTile(
-                        leading: _ThemePreview(theme: theme),
-                        title: Text(theme.name.toUpperCase()),
-                        trailing: settings.theme == theme
-                            ? const Icon(Icons.check_circle)
-                            : null,
-                        onTap: () => themeNotifier.setTheme(theme),
+                    const SizedBox(height: 24),
+                    Text(
+                      l10n.t('theme'),
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 12),
+                    ...ThemeType.values.map(
+                      (theme) => Card(
+                        child: ListTile(
+                          leading: _ThemePreview(theme: theme),
+                          title: Text(theme.name.toUpperCase()),
+                          trailing: settings.theme == theme
+                              ? const Icon(Icons.check_circle)
+                              : null,
+                          onTap: () => themeNotifier.setTheme(theme),
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    l10n.t('mainCountdown'),
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 12),
-                  _DateTile(
-                    label: l10n.t('targetDate'),
-                    date: settings.mainTargetDate,
-                    onPressed: (date) =>
-                        themeNotifier.setMainTargetDate(date ?? settings.mainTargetDate),
-                  ),
-                  _DateTile(
-                    label: l10n.t('startDate'),
-                    date: settings.mainStartDate,
-                    onPressed: (date) =>
-                        themeNotifier.setMainStartDate(date ?? settings.mainStartDate),
-                  ),
-                ],
+                    const SizedBox(height: 24),
+                    Text(
+                      l10n.t('mainCountdown'),
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 12),
+                    _DateTile(
+                      label: l10n.t('targetDate'),
+                      date: settings.mainTargetDate,
+                      onPressed: (date) => themeNotifier.setMainTargetDate(
+                        date ?? settings.mainTargetDate,
+                      ),
+                    ),
+                    _DateTile(
+                      label: l10n.t('startDate'),
+                      date: settings.mainStartDate,
+                      onPressed: (date) => themeNotifier.setMainStartDate(
+                        date ?? settings.mainStartDate,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
+        bottomNavigationBar: const BottomNav(),
       ),
-      bottomNavigationBar: const BottomNav(),
     );
   }
 }
@@ -147,10 +158,7 @@ class _ThemePreview extends StatelessWidget {
               width: 16,
               height: 16,
               margin: const EdgeInsets.only(right: 4),
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-              ),
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
             ),
           )
           .toList(),
