@@ -32,6 +32,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   CalendarViewMode _viewMode = CalendarViewMode.month;
   DateTime _currentDate = DateTime.now();
   bool _fabExpanded = false;
+  OverlayEntry? _dayPreviewEntry;
+  ValueNotifier<bool>? _dayPreviewVisible;
+  int _dayPreviewToken = 0;
   final int _initialPage =
       1000; // Start in the middle to allow scrolling both ways
   late final PageController _pageController = PageController(
@@ -45,19 +48,198 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
 
   @override
   void dispose() {
+    _hideDayPreview(immediate: true);
     _pageController.dispose();
     super.dispose();
   }
 
+  void _hideDayPreview({bool immediate = false}) {
+    if (_dayPreviewEntry == null) return;
+
+    final token = _dayPreviewToken;
+    _dayPreviewVisible?.value = false;
+
+    if (immediate) {
+      _dayPreviewEntry?.remove();
+      _dayPreviewEntry = null;
+      _dayPreviewVisible?.dispose();
+      _dayPreviewVisible = null;
+      return;
+    }
+
+    Future.delayed(const Duration(milliseconds: 320), () {
+      if (_dayPreviewToken != token) return;
+      _dayPreviewEntry?.remove();
+      _dayPreviewEntry = null;
+      _dayPreviewVisible?.dispose();
+      _dayPreviewVisible = null;
+    });
+  }
+
+  void _showDayPreview({
+    required BuildContext cellContext,
+    required DateTime day,
+    required List<_CalendarItem> items,
+    required AppLocalizations l10n,
+  }) {
+    _dayPreviewToken++;
+    _hideDayPreview(immediate: true);
+    final overlay = Overlay.of(cellContext);
+    if (overlay == null) return;
+
+    final box = cellContext.findRenderObject() as RenderBox?;
+    if (box == null) return;
+
+    final offset = box.localToGlobal(Offset.zero);
+    final size = box.size;
+    final overlayBox = overlay.context.findRenderObject() as RenderBox?;
+    final overlaySize = overlayBox?.size ?? MediaQuery.of(cellContext).size;
+
+    final double maxWidth = (overlaySize.width - 24).clamp(200.0, 320.0);
+    final double maxHeight = (overlaySize.height * 0.4).clamp(160.0, 320.0);
+    final double width = maxWidth;
+
+    double left = offset.dx + (size.width / 2) - (width / 2);
+    left = left.clamp(12.0, overlaySize.width - width - 12.0);
+
+    double top = offset.dy - maxHeight - 8;
+    if (top < 12.0) {
+      top = offset.dy + size.height + 8;
+    }
+
+    final title = DateFormat.MMMd(
+      Localizations.localeOf(cellContext).toLanguageTag(),
+    ).format(day);
+
+    _dayPreviewVisible = ValueNotifier<bool>(false);
+
+    final popupChild = Material(
+      elevation: 8,
+      borderRadius: BorderRadius.circular(16),
+      color: Theme.of(cellContext).colorScheme.surface,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxHeight: maxHeight),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: Theme.of(
+                  cellContext,
+                ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 8),
+              if (items.isEmpty)
+                Text(
+                  l10n.t('noEvents'),
+                  style: Theme.of(cellContext).textTheme.bodySmall,
+                )
+              else
+                Flexible(
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: items.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 6),
+                    itemBuilder: (context, index) {
+                      final item = items[index];
+                      final meta = <String>[];
+                      if (item.time != null) {
+                        meta.add(item.time!);
+                      }
+                      if (item.durationLabel != null) {
+                        meta.add(item.durationLabel!);
+                      }
+                      if (item.repeatLabel != null) {
+                        meta.add(item.repeatLabel!);
+                      }
+                      final metaText = meta.isEmpty ? null : meta.join(' • ');
+
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: 8,
+                            height: 8,
+                            margin: const EdgeInsets.only(top: 6),
+                            decoration: BoxDecoration(
+                              color: item.color,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item.title,
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(fontWeight: FontWeight.w600),
+                                ),
+                                if (metaText != null)
+                                  Text(
+                                    metaText,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.labelSmall,
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    _dayPreviewEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        left: left,
+        top: top,
+        width: width,
+        child: ValueListenableBuilder<bool>(
+          valueListenable: _dayPreviewVisible!,
+          builder: (context, visible, child) => AnimatedOpacity(
+            duration: const Duration(milliseconds: 320),
+            curve: Curves.easeOut,
+            opacity: visible ? 1 : 0,
+            child: AnimatedScale(
+              duration: const Duration(milliseconds: 320),
+              curve: Curves.easeOutBack,
+              scale: visible ? 1 : 0.96,
+              alignment: Alignment.topCenter,
+              child: child,
+            ),
+          ),
+          child: popupChild,
+        ),
+      ),
+    );
+
+    overlay.insert(_dayPreviewEntry!);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _dayPreviewVisible?.value = true;
+    });
+  }
+
   DateTime _getDateForPage(int page) {
     final offset = page - _initialPage;
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
     switch (_viewMode) {
       case CalendarViewMode.day:
-        return DateTime.now().add(Duration(days: offset));
+        return today.add(Duration(days: offset));
       case CalendarViewMode.week:
-        return DateTime.now().add(Duration(days: offset * 7));
+        return today.add(Duration(days: offset * 7));
       case CalendarViewMode.month:
-        final now = DateTime.now();
         return DateTime(now.year, now.month + offset, 1);
     }
   }
@@ -70,12 +252,14 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
 
   int _getPageForDate(DateTime date) {
     final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final targetDate = DateTime(date.year, date.month, date.day);
     switch (_viewMode) {
       case CalendarViewMode.day:
-        final daysDiff = date.difference(now).inDays;
+        final daysDiff = targetDate.difference(today).inDays;
         return _initialPage + daysDiff;
       case CalendarViewMode.week:
-        final weeksDiff = date.difference(now).inDays ~/ 7;
+        final weeksDiff = targetDate.difference(today).inDays ~/ 7;
         return _initialPage + weeksDiff;
       case CalendarViewMode.month:
         final monthsDiff =
@@ -663,62 +847,72 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                     context: context,
                     l10n: l10n,
                   );
-                  return GestureDetector(
-                    onTap: () {
-                      _viewMode = CalendarViewMode.day;
-                      _jumpToDate(day);
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: isToday
-                              ? Theme.of(context).colorScheme.primary
+                  return Builder(
+                    builder: (cellContext) => GestureDetector(
+                      onTap: () {
+                        _viewMode = CalendarViewMode.day;
+                        _jumpToDate(day);
+                      },
+                      onLongPressStart: (_) => _showDayPreview(
+                        cellContext: cellContext,
+                        day: day,
+                        items: items,
+                        l10n: l10n,
+                      ),
+                      onLongPressEnd: (_) => _hideDayPreview(),
+                      onLongPressCancel: _hideDayPreview,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: isToday
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(
+                                    context,
+                                  ).colorScheme.outline.withOpacity(0.2),
+                          ),
+                          color: inMonth
+                              ? Theme.of(context).colorScheme.surface
                               : Theme.of(
                                   context,
-                                ).colorScheme.outline.withOpacity(0.2),
+                                ).colorScheme.surface.withOpacity(0.5),
                         ),
-                        color: inMonth
-                            ? Theme.of(context).colorScheme.surface
-                            : Theme.of(
-                                context,
-                              ).colorScheme.surface.withOpacity(0.5),
-                      ),
-                      padding: const EdgeInsets.all(8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '${day.day}',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                          // Use a small fixed gap + a Flexible container for the dots
-                          // so they can shrink if the available height is very small
-                          // and avoid tiny pixel overflow due to rounding.
-                          const SizedBox(height: 2),
-                          Flexible(
-                            child: Align(
-                              alignment: Alignment.bottomLeft,
-                              child: Wrap(
-                                spacing: 2,
-                                runSpacing: 2,
-                                children: items
-                                    .take(3)
-                                    .map(
-                                      (item) => Container(
-                                        width: 6,
-                                        height: 6,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: item.color,
+                        padding: const EdgeInsets.all(8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${day.day}',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            // Use a small fixed gap + a Flexible container for the dots
+                            // so they can shrink if the available height is very small
+                            // and avoid tiny pixel overflow due to rounding.
+                            const SizedBox(height: 2),
+                            Flexible(
+                              child: Align(
+                                alignment: Alignment.bottomLeft,
+                                child: Wrap(
+                                  spacing: 2,
+                                  runSpacing: 2,
+                                  children: items
+                                      .take(3)
+                                      .map(
+                                        (item) => Container(
+                                          width: 6,
+                                          height: 6,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: item.color,
+                                          ),
                                         ),
-                                      ),
-                                    )
-                                    .toList(),
+                                      )
+                                      .toList(),
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   );

@@ -56,10 +56,10 @@ class MainActivity : FlutterActivity() {
         
         // Handle widget toggle events
         if (intent.action == "WIDGET_TODO_TOGGLED") {
-            val todoId = intent.getIntExtra("todoId", -1)
+            val todoId = extractTodoId(intent)
             val completed = intent.getBooleanExtra("completed", false)
             
-            if (todoId != -1) {
+            if (todoId != -1L) {
                 // Notify Flutter about the toggle
                 methodChannel?.invokeMethod("onTodoToggled", mapOf(
                     "todoId" to todoId,
@@ -75,8 +75,8 @@ class MainActivity : FlutterActivity() {
     private fun handleEditIntent(intent: Intent?) {
         android.util.Log.d("MainActivity", "handleEditIntent called with intent: $intent")
         
-        val editTodoId = intent?.getIntExtra("editTodoId", -1) ?: -1
-        if (editTodoId != -1) {
+        val editTodoId = intent?.let { extractTodoId(it, "editTodoId") } ?: -1L
+        if (editTodoId != -1L) {
             android.util.Log.d("MainActivity", "Opening edit for todo: $editTodoId")
             // Notify Flutter to open edit screen
             methodChannel?.invokeMethod("onEditTodo", mapOf("todoId" to editTodoId))
@@ -102,6 +102,21 @@ class MainActivity : FlutterActivity() {
         } catch (e: Exception) {
             android.util.Log.e("TodoWidget", "Error saving todos: ${e.message}", e)
         }
+    }
+
+    private fun extractTodoId(intent: Intent, key: String = "todoId"): Long {
+        val longExtra = intent.getLongExtra(key, Long.MIN_VALUE)
+        if (longExtra != Long.MIN_VALUE && longExtra != -1L) {
+            return longExtra
+        }
+
+        val intExtra = intent.getIntExtra(key, -1)
+        if (intExtra != -1) {
+            return intExtra.toLong()
+        }
+
+        val stringExtra = intent.getStringExtra(key)
+        return stringExtra?.toLongOrNull() ?: -1L
     }
 
     private fun updateWidget() {

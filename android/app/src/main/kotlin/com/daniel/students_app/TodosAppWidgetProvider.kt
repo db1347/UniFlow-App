@@ -16,6 +16,20 @@ import com.daniel.students_app.widget.TodoWidgetUpdateWorker
  * Displays a scrollable list of open TODO items on the home screen.
  */
 class TodosAppWidgetProvider : AppWidgetProvider() {
+    private fun extractTodoId(intent: Intent): Long {
+        val longExtra = intent.getLongExtra("todoId", Long.MIN_VALUE)
+        if (longExtra != Long.MIN_VALUE && longExtra != -1L) {
+            return longExtra
+        }
+
+        val intExtra = intent.getIntExtra("todoId", -1)
+        if (intExtra != -1) {
+            return intExtra.toLong()
+        }
+
+        val stringExtra = intent.getStringExtra("todoId")
+        return stringExtra?.toLongOrNull() ?: -1L
+    }
 
     override fun onUpdate(
         context: Context,
@@ -61,11 +75,11 @@ class TodosAppWidgetProvider : AppWidgetProvider() {
                 }
                 ACTION_TOGGLE_TODO -> {
                     android.util.Log.d("TodoWidget", "Handling TOGGLE_TODO")
-                    val todoId = intent.getIntExtra("todoId", -1)
+                    val todoId = extractTodoId(intent)
                     val action = intent.getStringExtra("action")
                     android.util.Log.d("TodoWidget", "TodoId: $todoId, Action: $action")
                     
-                    if (todoId != -1) {
+                    if (todoId != -1L) {
                         when (action) {
                             "toggle" -> {
                                 android.util.Log.d("TodoWidget", "Calling toggleTodo for id $todoId")
@@ -103,7 +117,7 @@ class TodosAppWidgetProvider : AppWidgetProvider() {
         private const val PREF_FILE = "FlutterSharedPreferences"
         private const val PREF_KEY = "flutter.countdown-app-todos"
 
-        private fun toggleTodo(context: Context, todoId: Int) {
+        private fun toggleTodo(context: Context, todoId: Long) {
             try {
                 android.util.Log.d("TodoWidget", "toggleTodo called for id: $todoId")
                 val prefs = context.getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE)
@@ -116,11 +130,19 @@ class TodosAppWidgetProvider : AppWidgetProvider() {
                 android.util.Log.d("TodoWidget", "Loaded ${todos.size} todos from SharedPreferences")
                 
                 // Find and toggle the todo
-                val todo = todos.find { (it["id"] as? Number)?.toInt() == todoId }
+                val todo = todos.find {
+                    val idValue = it["id"]
+                    val id = when (idValue) {
+                        is Number -> idValue.toLong()
+                        is String -> idValue.toLongOrNull() ?: 0L
+                        else -> 0L
+                    }
+                    id == todoId
+                }
                 if (todo != null) {
                     val currentCompleted = todo["completed"] as? Boolean ?: false
                     todo["completed"] = !currentCompleted
-                    todo["id"] = todoId // ensure id stored as int
+                    todo["id"] = todoId // ensure id stored as long
                     
                     // Save back to SharedPreferences
                     val updatedJson = gson.toJson(todos)

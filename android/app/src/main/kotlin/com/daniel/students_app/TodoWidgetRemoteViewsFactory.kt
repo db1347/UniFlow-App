@@ -10,7 +10,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
 data class TodoItem(
-    val id: Int,
+    val id: Long,
     val title: String,
     val completed: Boolean,
     val dueDate: String? = null,
@@ -84,7 +84,7 @@ class TodoWidgetRemoteViewsFactory(
 
     override fun getViewTypeCount(): Int = 1
 
-    override fun getItemId(position: Int): Long = todos[position].id.toLong()
+    override fun getItemId(position: Int): Long = todos[position].id
 
     override fun hasStableIds(): Boolean = true
 
@@ -126,8 +126,38 @@ class TodoWidgetRemoteViewsFactory(
 
             android.util.Log.d("TodoWidget", "JSON String: ${jsonString.take(300)}")
 
-            val type = object : TypeToken<List<TodoItem>>() {}.type
-            val allTodos: List<TodoItem> = Gson().fromJson(jsonString, type)
+            val type = object : TypeToken<List<Map<String, Any?>>>() {}.type
+            val rawTodos: List<Map<String, Any?>> = Gson().fromJson(jsonString, type)
+
+            val allTodos: List<TodoItem> = rawTodos.mapNotNull { item ->
+                val idValue = item["id"]
+                val id = when (idValue) {
+                    is Number -> idValue.toLong()
+                    is String -> idValue.toLongOrNull() ?: 0L
+                    else -> 0L
+                }
+
+                if (id == 0L) return@mapNotNull null
+
+                val title = item["title"] as? String ?: ""
+                val completedValue = item["completed"]
+                val completed = when (completedValue) {
+                    is Boolean -> completedValue
+                    is String -> completedValue.equals("true", ignoreCase = true)
+                    is Number -> completedValue.toInt() != 0
+                    else -> false
+                }
+                val dueDate = item["dueDate"] as? String
+                val repeat = item["repeat"] as? String ?: "none"
+
+                TodoItem(
+                    id = id,
+                    title = title,
+                    completed = completed,
+                    dueDate = dueDate,
+                    repeat = repeat,
+                )
+            }
             
             android.util.Log.d("TodoWidget", "Total todos loaded: ${allTodos.size}")
             allTodos.forEachIndexed { index, item ->
