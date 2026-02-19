@@ -23,6 +23,8 @@ class DashboardScreen extends ConsumerStatefulWidget {
 }
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
+  bool _isExitDialogVisible = false;
+
   Future<bool> _showExitDialog() async {
     final l10n = ref.read(localizationProvider);
     final result = await showDialog<bool>(
@@ -45,6 +47,27 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     return result ?? false;
   }
 
+  Future<bool> _handleWillPop() async {
+    if (_isExitDialogVisible) {
+      return false;
+    }
+    _isExitDialogVisible = true;
+    if (!mounted) {
+      _isExitDialogVisible = false;
+      return false;
+    }
+    final shouldExit = await _showExitDialog();
+    if (!mounted) {
+      _isExitDialogVisible = false;
+      return false;
+    }
+    _isExitDialogVisible = false;
+    if (shouldExit) {
+      SystemNavigator.pop();
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final settings = ref.watch(settingsControllerProvider);
@@ -52,16 +75,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final todos = ref.watch(todoControllerProvider);
     final l10n = ref.watch(localizationProvider);
 
-    return PopScope(
-      canPop: false,
-      onPopInvoked: (didPop) async {
-        if (!didPop) {
-          final shouldExit = await _showExitDialog();
-          if (shouldExit && context.mounted) {
-            SystemNavigator.pop();
-          }
-        }
-      },
+    return WillPopScope(
+      onWillPop: _handleWillPop,
       child: Scaffold(
         body: SafeArea(
           child: Column(
