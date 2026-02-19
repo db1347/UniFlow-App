@@ -19,6 +19,48 @@ class TodoScreen extends ConsumerStatefulWidget {
 }
 
 class _TodoScreenState extends ConsumerState<TodoScreen> {
+  bool _isCreateSheetOpen = false;
+  late final ProviderSubscription<bool> _addTaskSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Listen for add task request from widget
+    _addTaskSubscription = ref.listenManual<bool>(pendingAddTaskProvider, (
+      previous,
+      next,
+    ) {
+      if (next) {
+        debugPrint('TodoScreen: add task requested from widget (listener)');
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _openCreateSheetIfNeeded();
+        });
+      }
+    });
+
+    // Handle a pending add task that might already be set before this screen builds
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final pendingAddTask = ref.read(pendingAddTaskProvider);
+      if (pendingAddTask) {
+        debugPrint('TodoScreen: add task already pending on init');
+        _openCreateSheetIfNeeded();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _addTaskSubscription.close();
+    super.dispose();
+  }
+
+  void _openCreateSheetIfNeeded() {
+    if (_isCreateSheetOpen) return;
+    _openCreateSheet();
+  }
+
   void _handlePendingEdit(int? next) {
     if (next == null) return;
 
@@ -53,25 +95,6 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
     if (pendingNow != null) {
       debugPrint('TodoScreen: pendingEditTodoId initial=$pendingNow');
       _handlePendingEdit(pendingNow);
-    }
-
-    // Listen for add task request from widget
-    ref.listen<bool>(pendingAddTaskProvider, (previous, next) {
-      if (next) {
-        debugPrint('TodoScreen: add task requested from widget (listener)');
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _openCreateSheet();
-        });
-      }
-    });
-
-    // Check if add task was already requested before listener was registered
-    final pendingAddTask = ref.watch(pendingAddTaskProvider);
-    if (pendingAddTask) {
-      debugPrint('TodoScreen: add task already pending on build');
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _openCreateSheet();
-      });
     }
 
     final todos = ref.watch(todoControllerProvider);
@@ -156,6 +179,8 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
     DateTime? dueDate;
     TaskRepeat repeat = TaskRepeat.none;
 
+    _isCreateSheetOpen = true;
+
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -230,6 +255,8 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
     if (mounted) {
       ref.read(pendingAddTaskProvider.notifier).state = false;
     }
+
+    _isCreateSheetOpen = false;
   }
 
   String _repeatLabel(TaskRepeat repeat, AppLocalizations l10n) {
