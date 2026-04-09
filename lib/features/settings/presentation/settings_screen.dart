@@ -51,9 +51,7 @@ class SettingsScreen extends ConsumerWidget {
                                 ? Icons.radio_button_checked
                                 : Icons.radio_button_off,
                           ),
-                          title: Text(
-                            language == AppLanguage.en ? 'English' : 'עברית',
-                          ),
+                          title: Text(language.displayName),
                           onTap: () => themeNotifier.setLanguage(language),
                         ),
                       ),

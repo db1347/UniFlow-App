@@ -52,7 +52,7 @@ class TodoController extends Notifier<TodoState> {
           .toList(growable: false);
       initialState = TodoState(tasks);
     } else {
-      initialState = TodoState(_defaultTasks);
+      initialState = const TodoState([]);
     }
 
     // Set up method channel handler for widget callbacks
@@ -219,9 +219,4 @@ class TodoController extends Notifier<TodoState> {
     }
   }
 
-  List<Task> get _defaultTasks => [
-    Task(id: 1, title: 'Study for exams', repeat: TaskRepeat.daily),
-    Task(id: 2, title: 'Call mom', dueDate: DateTime.utc(2025, 12, 20)),
-    Task(id: 3, title: 'Finish project', completed: true),
-  ];
 }

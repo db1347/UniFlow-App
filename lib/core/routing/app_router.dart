@@ -4,6 +4,7 @@ import 'package:students_app/features/calendar/presentation/calendar_screen.dart
 import 'package:students_app/features/dashboard/presentation/dashboard_screen.dart';
 import 'package:students_app/features/not_found/not_found_screen.dart';
 import 'package:students_app/features/settings/presentation/settings_screen.dart';
+import 'package:students_app/features/schedule/presentation/schedule_screen.dart';
 import 'package:students_app/features/todos/presentation/todo_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -27,6 +28,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: 'calendar',
         pageBuilder: (context, state) =>
             const NoTransitionPage(child: CalendarScreen()),
+      ),
+      GoRoute(
+        path: '/schedule',
+        name: 'schedule',
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: ScheduleScreen()),
       ),
       GoRoute(
         path: '/settings',

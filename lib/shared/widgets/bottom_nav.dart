@@ -21,6 +21,11 @@ class BottomNav extends ConsumerWidget {
         path: '/calendar',
       ),
       _BottomNavItem(
+        icon: Icons.table_chart_outlined,
+        label: l10n.t('schedule'),
+        path: '/schedule',
+      ),
+      _BottomNavItem(
         icon: Icons.done_all_outlined,
         label: l10n.t('todo'),
         path: '/todo',

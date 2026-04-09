@@ -23,7 +23,7 @@ class CountdownController extends Notifier<List<Countdown>> {
           .map(Countdown.fromJson)
           .toList(growable: false);
     }
-    return _defaultCountdowns;
+    return [];
   }
 
   Countdown addCountdown({
@@ -76,30 +76,4 @@ class CountdownController extends Notifier<List<Countdown>> {
     prefs.setString(_storageKey, jsonEncode(payload));
   }
 
-  List<Countdown> get _defaultCountdowns => [
-        Countdown(
-          id: 1,
-          title: 'Passed Half!',
-          date: DateTime.utc(2025, 6, 1),
-          startDate: DateTime.utc(2024, 1, 1),
-          emoji: '✋',
-          variant: CountdownVariant.red,
-        ),
-        Countdown(
-          id: 2,
-          title: 'Done!',
-          date: DateTime.utc(2025, 12, 31),
-          startDate: DateTime.utc(2024, 6, 1),
-          emoji: '⏰',
-          variant: CountdownVariant.blue,
-        ),
-        Countdown(
-          id: 3,
-          title: 'Goal',
-          date: DateTime.utc(2026, 3, 15),
-          startDate: DateTime.utc(2025, 1, 1),
-          emoji: '🏆',
-          variant: CountdownVariant.gold,
-        ),
-      ];
 }

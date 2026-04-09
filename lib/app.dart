@@ -45,7 +45,7 @@ class ChronoStyleApp extends ConsumerWidget {
       ),
       routerConfig: router,
       locale: settings.language.locale,
-      supportedLocales: const [Locale('en'), Locale('he')],
+      supportedLocales: const [Locale('en'), Locale('he'), Locale('ru'), Locale('ar')],
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,

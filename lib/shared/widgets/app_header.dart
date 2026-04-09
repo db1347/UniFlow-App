@@ -95,6 +95,11 @@ class AppHeader extends ConsumerWidget {
         path: '/calendar',
       ),
       _NavItem(
+        icon: Icons.table_chart_outlined,
+        label: translations.t('schedule'),
+        path: '/schedule',
+      ),
+      _NavItem(
         icon: Icons.checklist_outlined,
         label: translations.t('todo'),
         path: '/todo',
