@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#CC1a1a1a">
@@ -9,40 +10,76 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <!-- Header -->
         <LinearLayout
             android:id="@+id/widget_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:paddingVertical="12dp"
-            android:paddingHorizontal="16dp"
-            android:background="#292929"
-            android:layout_marginBottom="8dp">
+            android:paddingVertical="10dp"
+            android:paddingHorizontal="14dp"
+            android:background="#292929">
 
+            <!-- Blue checkmark icon -->
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_check_blue"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="App icon" />
+
+            <!-- "My Day" title -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="To do"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF" />
+
+            <!-- Chevron / dropdown arrow -->
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_chevron_down"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:contentDescription="Select list" />
+
+            <!-- Spacer -->
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Open Tasks"
-                android:textSize="16sp"
-                android:textStyle="normal"
-                android:textColor="#FFFFFF" />
+                android:layout_weight="1" />
 
+            <!-- Refresh button -->
+            <ImageButton
+                android:id="@+id/widget_refresh_button"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_refresh_white"
+                android:contentDescription="Refresh"
+                android:background="@android:color/transparent"
+                android:scaleType="centerInside"
+                android:layout_marginEnd="4dp" />
+
+            <!-- Add button -->
             <ImageButton
                 android:id="@+id/widget_add_button"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:src="@drawable/ic_add_material"
                 android:contentDescription="Add Task"
                 android:background="@android:color/transparent"
                 android:scaleType="centerInside"
-                android:layout_marginEnd="8dp" />
+                android:layout_marginEnd="4dp" />
 
+            <!-- Settings button -->
             <ImageButton
                 android:id="@+id/widget_settings_button"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:src="@drawable/ic_settings_material"
                 android:contentDescription="Settings"
                 android:background="@android:color/transparent"
@@ -56,7 +93,7 @@
             android:layout_height="match_parent"
             android:divider="@null"
             android:dividerHeight="0dp"
-            android:paddingHorizontal="8dp" />
+            android:paddingTop="4dp" />
 
     </LinearLayout>
 

@@ -3,27 +3,58 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="12dp"
-    android:gravity="center_vertical">
+    android:paddingLeft="14dp"
+    android:paddingRight="14dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:gravity="center_vertical"
+    android:minHeight="56dp">
 
+    <!-- Circle checkbox -->
     <ImageView
         android:id="@+id/todo_checkbox"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:padding="6dp"
-        android:layout_marginEnd="12dp"
-        android:src="@drawable/todo_checkbox" />
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:padding="4dp"
+        android:layout_marginEnd="14dp"
+        android:src="@drawable/todo_checkbox_gray"
+        android:contentDescription="Toggle task" />
 
-    <TextView
-        android:id="@+id/todo_title"
+    <!-- Title + list name (vertical) -->
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textSize="14sp"
-        android:textColor="#FFFFFF"
-        android:maxLines="2"
-        android:ellipsize="end"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp" />
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/todo_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+        <TextView
+            android:id="@+id/todo_list_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tasks"
+            android:textSize="12sp"
+            android:textColor="#888888"
+            android:layout_marginTop="2dp" />
+
+    </LinearLayout>
+
+    <!-- Star / favourite icon -->
+    <ImageView
+        android:id="@+id/todo_star"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_star_outline"
+        android:layout_marginStart="8dp"
+        android:contentDescription="Favourite" />
 
 </LinearLayout>

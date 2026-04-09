@@ -15,6 +15,7 @@ data class TodoItem(
     val completed: Boolean,
     val dueDate: String? = null,
     val repeat: String? = "none",
+    val starred: Boolean = false,
 )
 
 class TodoWidgetRemoteViewsFactory(
@@ -52,6 +53,14 @@ class TodoWidgetRemoteViewsFactory(
         // Set the todo title
         views.setTextViewText(R.id.todo_title, todo.title)
 
+        // Apply font size from settings
+        val fontSize = when (WidgetSettingsActivity.getFontSize(context)) {
+            "Small" -> 12f
+            "Large" -> 18f
+            else   -> 15f
+        }
+        views.setTextViewTextSize(R.id.todo_title, android.util.TypedValue.COMPLEX_UNIT_SP, fontSize)
+
         // Set strike-through if completed
         if (todo.completed) {
             views.setInt(R.id.todo_title, "setPaintFlags", android.graphics.Paint.STRIKE_THRU_TEXT_FLAG)
@@ -67,13 +76,27 @@ class TodoWidgetRemoteViewsFactory(
             putExtra("action", "toggle")
         }
         views.setOnClickFillInIntent(R.id.todo_checkbox, toggleFillIntent)
-        
-        // Title click - open edit
+
+        // Title / row click - open edit
         val editFillIntent = Intent().apply {
             putExtra("todoId", todo.id)
             putExtra("action", "edit")
         }
         views.setOnClickFillInIntent(R.id.todo_title, editFillIntent)
+        views.setOnClickFillInIntent(R.id.todo_list_name, editFillIntent)
+
+        // Star icon: filled if starred, outline if not
+        views.setImageViewResource(
+            R.id.todo_star,
+            if (todo.starred) R.drawable.ic_star_filled else R.drawable.ic_star_outline
+        )
+
+        // Star click - toggle starred state
+        val starFillIntent = Intent().apply {
+            putExtra("todoId", todo.id)
+            putExtra("action", "star")
+        }
+        views.setOnClickFillInIntent(R.id.todo_star, starFillIntent)
         
         android.util.Log.d("TodoWidget", "Checkbox: toggle, Title: edit for todoId=${todo.id}")
 
@@ -129,6 +152,10 @@ class TodoWidgetRemoteViewsFactory(
             val type = object : TypeToken<List<Map<String, Any?>>>() {}.type
             val rawTodos: List<Map<String, Any?>> = Gson().fromJson(jsonString, type)
 
+            // Load starred IDs from widget prefs
+            val widgetPrefs = context.getSharedPreferences("widget_settings", Context.MODE_PRIVATE)
+            val starredIds = widgetPrefs.getStringSet("starred_ids", emptySet()) ?: emptySet()
+
             val allTodos: List<TodoItem> = rawTodos.mapNotNull { item ->
                 val idValue = item["id"]
                 val id = when (idValue) {
@@ -156,6 +183,7 @@ class TodoWidgetRemoteViewsFactory(
                     completed = completed,
                     dueDate = dueDate,
                     repeat = repeat,
+                    starred = starredIds.contains(id.toString()),
                 )
             }
             
@@ -164,8 +192,10 @@ class TodoWidgetRemoteViewsFactory(
                 android.util.Log.d("TodoWidget", "  [$index] id=${item.id}, title=${item.title}, completed=${item.completed}")
             }
 
-            // Filter to only open (non-completed) todos and limit to 10
-            todos = allTodos.filter { !it.completed }.take(10)
+            // Filter based on settings, then sort: starred first
+            val showCompleted = WidgetSettingsActivity.getShowCompleted(context)
+            val filtered = if (showCompleted) allTodos else allTodos.filter { !it.completed }
+            todos = filtered.sortedByDescending { it.starred }.take(10)
             
             android.util.Log.d("TodoWidget", "Filtered open todos: ${todos.size}")
             todos.forEach { 

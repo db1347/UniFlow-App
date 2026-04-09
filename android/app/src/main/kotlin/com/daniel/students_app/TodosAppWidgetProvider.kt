@@ -85,6 +85,10 @@ class TodosAppWidgetProvider : AppWidgetProvider() {
                                 android.util.Log.d("TodoWidget", "Calling toggleTodo for id $todoId")
                                 toggleTodo(context, todoId)
                             }
+                            "star" -> {
+                                android.util.Log.d("TodoWidget", "Starring todo id $todoId")
+                                toggleStar(context, todoId)
+                            }
                             "edit" -> {
                                 android.util.Log.d("TodoWidget", "Opening edit for id $todoId")
                                 val mainActivityIntent = Intent(context, MainActivity::class.java).apply {
@@ -173,6 +177,26 @@ class TodosAppWidgetProvider : AppWidgetProvider() {
             }
         }
 
+        private fun toggleStar(context: Context, todoId: Long) {
+            try {
+                val prefs = context.getSharedPreferences("widget_settings", Context.MODE_PRIVATE)
+                val starredIds = prefs.getStringSet("starred_ids", emptySet())?.toMutableSet() ?: mutableSetOf()
+                val idStr = todoId.toString()
+                if (starredIds.contains(idStr)) starredIds.remove(idStr) else starredIds.add(idStr)
+                prefs.edit().putStringSet("starred_ids", starredIds).apply()
+
+                val appWidgetManager = AppWidgetManager.getInstance(context)
+                val appWidgetIds = appWidgetManager.getAppWidgetIds(
+                    ComponentName(context, TodosAppWidgetProvider::class.java)
+                )
+                for (appWidgetId in appWidgetIds) {
+                    updateAppWidget(context, appWidgetManager, appWidgetId)
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("TodoWidget", "Error toggling star", e)
+            }
+        }
+
         internal fun updateAppWidget(
             context: Context,
             appWidgetManager: AppWidgetManager,
@@ -228,6 +252,36 @@ class TodosAppWidgetProvider : AppWidgetProvider() {
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                 )
                 views.setOnClickPendingIntent(R.id.widget_add_button, addTaskPendingIntent)
+
+                // Set up refresh button
+                val refreshIntent = Intent(context, TodosAppWidgetProvider::class.java).apply {
+                    action = ACTION_UPDATE_TODOS
+                }
+                val refreshPendingIntent = PendingIntent.getBroadcast(
+                    context,
+                    2,
+                    refreshIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+                views.setOnClickPendingIntent(R.id.widget_refresh_button, refreshPendingIntent)
+
+                // Set up settings button → launch WidgetSettingsActivity
+                val settingsIntent = Intent(context, WidgetSettingsActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+                val settingsPendingIntent = PendingIntent.getActivity(
+                    context,
+                    3,
+                    settingsIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+                views.setOnClickPendingIntent(R.id.widget_settings_button, settingsPendingIntent)
+
+                // Apply background opacity from settings
+                val opacity = WidgetSettingsActivity.getOpacity(context)
+                val alpha = (opacity / 100f * 255).toInt()
+                val bgColor = (alpha shl 24) or 0x1A1A1A
+                views.setInt(R.id.widget_root, "setBackgroundColor", bgColor)
 
                 // Update the widget
                 appWidgetManager.updateAppWidget(appWidgetId, views)
