@@ -799,4 +799,102 @@ final Map<String, Map<AppLanguage, String>> _translations = {
     AppLanguage.ru: 'Добавить',
     AppLanguage.ar: 'إضافة',
   },
+
+  // ── Onboarding ───────────────────────────────────────────────────────────────
+  'onboarding_welcome_title': {
+    AppLanguage.en: 'Welcome to UniFlow',
+    AppLanguage.he: 'ברוך הבא ל-UniFlow',
+    AppLanguage.ru: 'Добро пожаловать в UniFlow',
+    AppLanguage.ar: 'مرحباً بك في UniFlow',
+  },
+  'onboarding_welcome_subtitle': {
+    AppLanguage.en: 'Your all-in-one student planner.\nChoose your language to get started.',
+    AppLanguage.he: 'הפלאנר המלא לסטודנטים.\nבחר שפה כדי להתחיל.',
+    AppLanguage.ru: 'Универсальный планировщик для студентов.\nВыберите язык для начала.',
+    AppLanguage.ar: 'منظّمك الشامل كطالب.\nاختر لغتك للبدء.',
+  },
+  'onboarding_countdowns_title': {
+    AppLanguage.en: 'Track Important Dates',
+    AppLanguage.he: 'עקוב אחר תאריכים חשובים',
+    AppLanguage.ru: 'Отслеживайте важные даты',
+    AppLanguage.ar: 'تتبع التواريخ المهمة',
+  },
+  'onboarding_countdowns_desc': {
+    AppLanguage.en: 'Set countdowns for exams, assignments, and milestones — always know what\'s coming.',
+    AppLanguage.he: 'הגדר ספירות לאחור לבחינות, מטלות ואירועים — תמיד דע מה מתקרב.',
+    AppLanguage.ru: 'Устанавливайте обратный отсчёт до экзаменов, заданий и важных событий.',
+    AppLanguage.ar: 'اضبط عدادات تنازلية للامتحانات والواجبات والمعالم — اعرف دائماً ما هو قادم.',
+  },
+  'onboarding_todo_title': {
+    AppLanguage.en: 'Stay on Top of Tasks',
+    AppLanguage.he: 'הישאר על גבי המשימות שלך',
+    AppLanguage.ru: 'Контролируйте свои задачи',
+    AppLanguage.ar: 'ابقَ على رأس مهامك',
+  },
+  'onboarding_todo_desc': {
+    AppLanguage.en: 'Manage your daily tasks, star the important ones, and check them off as you go.',
+    AppLanguage.he: 'נהל את המשימות היומיות שלך, סמן את החשובות בכוכב ותסמן אותן כשתסיים.',
+    AppLanguage.ru: 'Управляйте ежедневными задачами, отмечайте важные звёздочкой и завершайте их по ходу.',
+    AppLanguage.ar: 'أدر مهامك اليومية، نجّم المهمة منها، وضع علامة اكتمال عند الانتهاء.',
+  },
+  'onboarding_schedule_title': {
+    AppLanguage.en: 'Organize Your Week',
+    AppLanguage.he: 'ארגן את השבוע שלך',
+    AppLanguage.ru: 'Организуйте свою неделю',
+    AppLanguage.ar: 'نظّم أسبوعك',
+  },
+  'onboarding_schedule_desc': {
+    AppLanguage.en: 'Set up your class schedule, view it by day or week, and never miss a lecture.',
+    AppLanguage.he: 'הגדר את מערכת השעות שלך, צפה בה לפי יום או שבוע ואל תחמיץ שיעור.',
+    AppLanguage.ru: 'Настройте расписание занятий, просматривайте его по дням или неделям.',
+    AppLanguage.ar: 'أعدّ جدولك الدراسي، اعرضه يومياً أو أسبوعياً، ولا تفوّت محاضرة.',
+  },
+  'onboarding_calendar_title': {
+    AppLanguage.en: 'See the Big Picture',
+    AppLanguage.he: 'ראה את התמונה הגדולה',
+    AppLanguage.ru: 'Видьте общую картину',
+    AppLanguage.ar: 'شاهد الصورة الكاملة',
+  },
+  'onboarding_calendar_desc': {
+    AppLanguage.en: 'View all your tasks and events in one calendar so nothing slips through the cracks.',
+    AppLanguage.he: 'צפה בכל המשימות והאירועים שלך בלוח שנה אחד כדי שלא תפספס דבר.',
+    AppLanguage.ru: 'Смотрите все задачи и события в одном календаре — ничего не упустите.',
+    AppLanguage.ar: 'اعرض جميع مهامك وأحداثك في تقويم واحد حتى لا يفوتك شيء.',
+  },
+  'onboarding_ready_title': {
+    AppLanguage.en: 'You\'re All Set!',
+    AppLanguage.he: 'הכל מוכן!',
+    AppLanguage.ru: 'Всё готово!',
+    AppLanguage.ar: 'أنت جاهز!',
+  },
+  'onboarding_ready_desc': {
+    AppLanguage.en: 'Start your productive journey with UniFlow. You can always change settings later.',
+    AppLanguage.he: 'התחל את המסע הפרודוקטיבי שלך עם UniFlow. תמיד אפשר לשנות הגדרות מאוחר יותר.',
+    AppLanguage.ru: 'Начните продуктивное путешествие с UniFlow. Настройки всегда можно изменить позже.',
+    AppLanguage.ar: 'ابدأ رحلتك المنتجة مع UniFlow. يمكنك دائماً تغيير الإعدادات لاحقاً.',
+  },
+  'onboarding_next': {
+    AppLanguage.en: 'Next',
+    AppLanguage.he: 'הבא',
+    AppLanguage.ru: 'Далее',
+    AppLanguage.ar: 'التالي',
+  },
+  'onboarding_skip': {
+    AppLanguage.en: 'Skip',
+    AppLanguage.he: 'דלג',
+    AppLanguage.ru: 'Пропустить',
+    AppLanguage.ar: 'تخطى',
+  },
+  'onboarding_get_started': {
+    AppLanguage.en: 'Get Started',
+    AppLanguage.he: 'בואו נתחיל',
+    AppLanguage.ru: 'Начать',
+    AppLanguage.ar: 'ابدأ الآن',
+  },
+  'onboarding_choose_language': {
+    AppLanguage.en: 'Choose Language',
+    AppLanguage.he: 'בחר שפה',
+    AppLanguage.ru: 'Выберите язык',
+    AppLanguage.ar: 'اختر اللغة',
+  },
 };
