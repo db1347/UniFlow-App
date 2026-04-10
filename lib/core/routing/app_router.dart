@@ -5,6 +5,7 @@ import 'package:students_app/features/calendar/presentation/calendar_screen.dart
 import 'package:students_app/features/dashboard/presentation/dashboard_screen.dart';
 import 'package:students_app/features/not_found/not_found_screen.dart';
 import 'package:students_app/features/onboarding/presentation/onboarding_screen.dart';
+import 'package:students_app/features/help/presentation/help_screen.dart';
 import 'package:students_app/features/settings/presentation/settings_screen.dart';
 import 'package:students_app/features/schedule/presentation/schedule_screen.dart';
 import 'package:students_app/features/todos/presentation/todo_screen.dart';
@@ -57,6 +58,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: 'settings',
         pageBuilder: (context, state) =>
             const NoTransitionPage(child: SettingsScreen()),
+      ),
+      GoRoute(
+        path: '/help',
+        name: 'help',
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: HelpScreen()),
       ),
     ],
     errorBuilder: (context, state) => const NotFoundScreen(),

@@ -897,4 +897,158 @@ final Map<String, Map<AppLanguage, String>> _translations = {
     AppLanguage.ru: 'Выберите язык',
     AppLanguage.ar: 'اختر اللغة',
   },
+
+  // ── Help ─────────────────────────────────────────────────────────────────────
+  'help': {
+    AppLanguage.en: 'Help',
+    AppLanguage.he: 'עזרה',
+    AppLanguage.ru: 'Справка',
+    AppLanguage.ar: 'المساعدة',
+  },
+  'help_title': {
+    AppLanguage.en: 'Help & Guide',
+    AppLanguage.he: 'עזרה ומדריך',
+    AppLanguage.ru: 'Справка и руководство',
+    AppLanguage.ar: 'المساعدة والدليل',
+  },
+  'help_section_countdowns': {
+    AppLanguage.en: 'Countdowns & Timer',
+    AppLanguage.he: 'ספירות לאחור וטיימר',
+    AppLanguage.ru: 'Обратный отсчёт и таймер',
+    AppLanguage.ar: 'العدادات التنازلية والمؤقت',
+  },
+  'help_countdowns_1': {
+    AppLanguage.en: 'Tap + to create a countdown — add a title, emoji, target date and start date.',
+    AppLanguage.he: 'לחץ על + כדי ליצור ספירה לאחור — הוסף כותרת, אימוג׳י, תאריך יעד ותאריך התחלה.',
+    AppLanguage.ru: 'Нажмите + чтобы создать обратный отсчёт — добавьте название, эмодзи, целевую и начальную даты.',
+    AppLanguage.ar: 'اضغط + لإنشاء عداد تنازلي — أضف عنواناً ورمزاً وتاريخ الهدف والبداية.',
+  },
+  'help_countdowns_2': {
+    AppLanguage.en: 'The large ring on the home screen shows the progress of your main countdown.',
+    AppLanguage.he: 'הטבעת הגדולה במסך הראשי מציגה את ההתקדמות של הספירה לאחור הראשית.',
+    AppLanguage.ru: 'Большое кольцо на главном экране показывает прогресс основного обратного отсчёта.',
+    AppLanguage.ar: 'تُظهر الحلقة الكبيرة في الشاشة الرئيسية تقدم العداد التنازلي الرئيسي.',
+  },
+  'help_countdowns_3': {
+    AppLanguage.en: 'Tap any countdown card to edit it, or swipe it to delete.',
+    AppLanguage.he: 'לחץ על כרטיס ספירה לאחור כדי לערוך אותו, או החלק כדי למחוק.',
+    AppLanguage.ru: 'Нажмите на карточку для редактирования или смахните чтобы удалить.',
+    AppLanguage.ar: 'اضغط على بطاقة العداد لتعديلها أو اسحبها للحذف.',
+  },
+  'help_section_todo': {
+    AppLanguage.en: 'To-Do List',
+    AppLanguage.he: 'רשימת משימות',
+    AppLanguage.ru: 'Список задач',
+    AppLanguage.ar: 'قائمة المهام',
+  },
+  'help_todo_1': {
+    AppLanguage.en: 'Tap + to add a new task with an optional due date and repeat setting.',
+    AppLanguage.he: 'לחץ על + כדי להוסיף משימה חדשה עם תאריך יעד אופציונלי והגדרת חזרה.',
+    AppLanguage.ru: 'Нажмите + чтобы добавить задачу с опциональной датой и повтором.',
+    AppLanguage.ar: 'اضغط + لإضافة مهمة جديدة مع تاريخ استحقاق اختياري وإعداد التكرار.',
+  },
+  'help_todo_2': {
+    AppLanguage.en: 'Tap the star icon to pin important tasks to the top of the list.',
+    AppLanguage.he: 'לחץ על אייקון הכוכב כדי להצמיד משימות חשובות לראש הרשימה.',
+    AppLanguage.ru: 'Нажмите на звёздочку чтобы закрепить важные задачи вверху списка.',
+    AppLanguage.ar: 'اضغط على أيقونة النجمة لتثبيت المهام المهمة في أعلى القائمة.',
+  },
+  'help_todo_3': {
+    AppLanguage.en: 'Tap the checkbox to mark a task as complete.',
+    AppLanguage.he: 'לחץ על תיבת הסימון כדי לסמן משימה כהושלמה.',
+    AppLanguage.ru: 'Нажмите на флажок чтобы отметить задачу выполненной.',
+    AppLanguage.ar: 'اضغط على مربع الاختيار لوضع علامة اكتمال المهمة.',
+  },
+  'help_todo_4': {
+    AppLanguage.en: 'Tap a task title to open the edit sheet and change details.',
+    AppLanguage.he: 'לחץ על כותרת המשימה לפתיחת דף העריכה ושינוי פרטים.',
+    AppLanguage.ru: 'Нажмите на название задачи чтобы открыть редактор и изменить детали.',
+    AppLanguage.ar: 'اضغط على عنوان المهمة لفتح نافذة التعديل وتغيير التفاصيل.',
+  },
+  'help_section_schedule': {
+    AppLanguage.en: 'Class Schedule',
+    AppLanguage.he: 'מערכת שעות',
+    AppLanguage.ru: 'Расписание занятий',
+    AppLanguage.ar: 'الجدول الدراسي',
+  },
+  'help_schedule_1': {
+    AppLanguage.en: 'Tap + to add a class — set the day, time, color, location and type.',
+    AppLanguage.he: 'לחץ על + כדי להוסיף שיעור — הגדר יום, שעה, צבע, מיקום וסוג.',
+    AppLanguage.ru: 'Нажмите + чтобы добавить занятие — установите день, время, цвет, место и тип.',
+    AppLanguage.ar: 'اضغط + لإضافة درس — حدد اليوم والوقت واللون والموقع والنوع.',
+  },
+  'help_schedule_2': {
+    AppLanguage.en: 'Use the Weekly / Daily toggle to switch between views.',
+    AppLanguage.he: 'השתמש בכפתור שבועי / יומי כדי לעבור בין תצוגות.',
+    AppLanguage.ru: 'Используйте переключатель Неделя / День для смены вида.',
+    AppLanguage.ar: 'استخدم زر أسبوعي/يومي للتبديل بين العروض.',
+  },
+  'help_schedule_3': {
+    AppLanguage.en: 'Tap any class block to edit or delete it.',
+    AppLanguage.he: 'לחץ על בלוק שיעור כלשהו כדי לערוך או למחוק אותו.',
+    AppLanguage.ru: 'Нажмите на любой блок занятия чтобы изменить или удалить его.',
+    AppLanguage.ar: 'اضغط على أي كتلة درس لتعديلها أو حذفها.',
+  },
+  'help_section_calendar': {
+    AppLanguage.en: 'Calendar',
+    AppLanguage.he: 'לוח שנה',
+    AppLanguage.ru: 'Календарь',
+    AppLanguage.ar: 'التقويم',
+  },
+  'help_calendar_1': {
+    AppLanguage.en: 'Tap any day to see tasks that are due on that date.',
+    AppLanguage.he: 'לחץ על כל יום כדי לראות משימות שמועד הגשתן הוא באותו תאריך.',
+    AppLanguage.ru: 'Нажмите на любой день чтобы увидеть задачи со сроком в эту дату.',
+    AppLanguage.ar: 'اضغط على أي يوم لعرض المهام المستحقة في ذلك التاريخ.',
+  },
+  'help_calendar_2': {
+    AppLanguage.en: 'Days with tasks are highlighted with a dot below the date.',
+    AppLanguage.he: 'ימים עם משימות מודגשים עם נקודה מתחת לתאריך.',
+    AppLanguage.ru: 'Дни с задачами выделены точкой под датой.',
+    AppLanguage.ar: 'الأيام التي تحتوي مهام تُميَّز بنقطة أسفل التاريخ.',
+  },
+  'help_section_settings': {
+    AppLanguage.en: 'Settings',
+    AppLanguage.he: 'הגדרות',
+    AppLanguage.ru: 'Настройки',
+    AppLanguage.ar: 'الإعدادات',
+  },
+  'help_settings_1': {
+    AppLanguage.en: 'Change the app language and theme from the Settings screen.',
+    AppLanguage.he: 'שנה את שפת האפליקציה וערכת הנושא מהגדרות.',
+    AppLanguage.ru: 'Измените язык и тему приложения в Настройках.',
+    AppLanguage.ar: 'غيّر لغة التطبيق والمظهر من شاشة الإعدادات.',
+  },
+  'help_settings_2': {
+    AppLanguage.en: 'Set your main countdown start and target dates to personalise the progress ring.',
+    AppLanguage.he: 'הגדר תאריכי התחלה ויעד לספירה הראשית כדי להתאים אישית את טבעת ההתקדמות.',
+    AppLanguage.ru: 'Установите начальную и целевую даты основного отсчёта для кольца прогресса.',
+    AppLanguage.ar: 'حدد تواريخ البدء والهدف للعداد الرئيسي لتخصيص حلقة التقدم.',
+  },
+
+  // ── Hint banners ─────────────────────────────────────────────────────────────
+  'hint_timer': {
+    AppLanguage.en: 'Tap + to add a countdown. Tap any card to edit it.',
+    AppLanguage.he: 'לחץ + להוספת ספירה לאחור. לחץ על כרטיס כדי לערוך.',
+    AppLanguage.ru: 'Нажмите + чтобы добавить отсчёт. Нажмите на карточку для редактирования.',
+    AppLanguage.ar: 'اضغط + لإضافة عداد. اضغط على أي بطاقة لتعديلها.',
+  },
+  'hint_todo': {
+    AppLanguage.en: 'Tap + to add a task. Star important ones to pin them to the top.',
+    AppLanguage.he: 'לחץ + להוספת משימה. סמן בכוכב כדי להצמיד משימות חשובות.',
+    AppLanguage.ru: 'Нажмите + чтобы добавить задачу. Звёздочка закрепляет задачу вверху.',
+    AppLanguage.ar: 'اضغط + لإضافة مهمة. نجّم المهام المهمة لتثبيتها في الأعلى.',
+  },
+  'hint_schedule': {
+    AppLanguage.en: 'Tap + to add a class. Switch between Weekly and Daily views at the top.',
+    AppLanguage.he: 'לחץ + להוספת שיעור. עבור בין תצוגה שבועית ויומית בחלק העליון.',
+    AppLanguage.ru: 'Нажмите + чтобы добавить занятие. Переключайте виды вверху экрана.',
+    AppLanguage.ar: 'اضغط + لإضافة درس. بدّل بين العرض الأسبوعي واليومي في الأعلى.',
+  },
+  'hint_calendar': {
+    AppLanguage.en: 'Tap any day to see your tasks. Highlighted dates have items due.',
+    AppLanguage.he: 'לחץ על כל יום כדי לראות המשימות שלך. תאריכים מודגשים כוללים פריטים.',
+    AppLanguage.ru: 'Нажмите на день чтобы увидеть задачи. Выделенные даты содержат элементы.',
+    AppLanguage.ar: 'اضغط على أي يوم لعرض مهامك. التواريخ المميزة تحتوي عناصر مستحقة.',
+  },
 };

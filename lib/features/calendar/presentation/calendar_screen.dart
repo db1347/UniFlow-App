@@ -18,6 +18,7 @@ import 'package:students_app/features/todos/application/todo_controller.dart';
 import 'package:students_app/features/todos/domain/task.dart';
 import 'package:students_app/shared/widgets/app_header.dart';
 import 'package:students_app/shared/widgets/bottom_nav.dart';
+import 'package:students_app/shared/widgets/hint_banner.dart';
 
 enum CalendarViewMode { day, week, month }
 
@@ -303,6 +304,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           child: Column(
             children: [
               const AppHeader(),
+              const HintBanner(hintKey: 'hint_calendar'),
               Expanded(
                 child: Stack(
                   children: [

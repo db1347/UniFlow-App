@@ -59,14 +59,25 @@ class AppHeader extends ConsumerWidget {
             ),
           ),
           const Spacer(),
-          IconButton(
-            icon: const Icon(Icons.menu),
-            color: theme.colorScheme.onSurface,
-            onPressed: () => _showNavigationSheet(
-              context,
-              ref,
-              settings.language,
-              translations,
+          Tooltip(
+            message: translations.t('help'),
+            child: IconButton(
+              icon: const Icon(Icons.help_outline_rounded),
+              color: theme.colorScheme.onSurface,
+              onPressed: () => context.go('/help'),
+            ),
+          ),
+          Tooltip(
+            message: translations.t('menu'),
+            child: IconButton(
+              icon: const Icon(Icons.menu),
+              color: theme.colorScheme.onSurface,
+              onPressed: () => _showNavigationSheet(
+                context,
+                ref,
+                settings.language,
+                translations,
+              ),
             ),
           ),
         ],
@@ -108,6 +119,11 @@ class AppHeader extends ConsumerWidget {
         icon: Icons.settings_outlined,
         label: translations.t('settings'),
         path: '/settings',
+      ),
+      _NavItem(
+        icon: Icons.help_outline_rounded,
+        label: translations.t('help'),
+        path: '/help',
       ),
     ];
     final currentLocation = GoRouterState.of(context).uri.toString();

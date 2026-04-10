@@ -12,6 +12,7 @@ import 'package:students_app/features/settings/application/settings_controller.d
 import 'package:students_app/features/todos/application/todo_controller.dart';
 import 'package:students_app/shared/widgets/app_header.dart';
 import 'package:students_app/shared/widgets/bottom_nav.dart';
+import 'package:students_app/shared/widgets/hint_banner.dart';
 import 'package:students_app/shared/widgets/main_countdown.dart';
 import 'package:students_app/shared/widgets/mini_countdown_card.dart';
 
@@ -82,6 +83,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           child: Column(
             children: [
               const AppHeader(),
+              const HintBanner(hintKey: 'hint_timer'),
               Expanded(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.fromLTRB(16, 24, 16, 120),

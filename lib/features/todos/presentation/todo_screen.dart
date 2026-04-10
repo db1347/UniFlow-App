@@ -10,6 +10,7 @@ import 'package:students_app/features/todos/application/todo_controller.dart';
 import 'package:students_app/features/todos/domain/task.dart';
 import 'package:students_app/shared/widgets/app_header.dart';
 import 'package:students_app/shared/widgets/bottom_nav.dart';
+import 'package:students_app/shared/widgets/hint_banner.dart';
 
 class TodoScreen extends ConsumerStatefulWidget {
   const TodoScreen({super.key});
@@ -114,6 +115,7 @@ class _TodoScreenState extends ConsumerState<TodoScreen> {
           child: Column(
             children: [
               const AppHeader(),
+              const HintBanner(hintKey: 'hint_todo'),
               Expanded(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.fromLTRB(16, 24, 16, 120),

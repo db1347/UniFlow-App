@@ -6,6 +6,7 @@ import 'package:students_app/features/schedule/application/schedule_controller.d
 import 'package:students_app/features/schedule/domain/schedule_entry.dart';
 import 'package:students_app/shared/widgets/app_header.dart';
 import 'package:students_app/shared/widgets/bottom_nav.dart';
+import 'package:students_app/shared/widgets/hint_banner.dart';
 
 // ─── Layout constants ─────────────────────────────────────────────────────────
 
@@ -55,6 +56,7 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const AppHeader(),
+              const HintBanner(hintKey: 'hint_schedule'),
               _Header(
                 title: l10n.t('schedule'),
                 weeklyView: _weeklyView,
