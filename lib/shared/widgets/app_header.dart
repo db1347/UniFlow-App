@@ -24,7 +24,9 @@ class AppHeader extends ConsumerWidget {
           bottom: BorderSide(color: theme.colorScheme.outline.withOpacity(0.3)),
         ),
       ),
-      child: Row(
+      child: Directionality(
+        textDirection: TextDirection.ltr,
+        child: Row(
         children: [
           Container(
             width: 44,
@@ -81,6 +83,7 @@ class AppHeader extends ConsumerWidget {
             ),
           ),
         ],
+        ),
       ),
     );
   }
@@ -91,9 +94,8 @@ class AppHeader extends ConsumerWidget {
     AppLanguage language,
     AppLocalizations translations,
   ) {
-    final alignment = language == AppLanguage.he
-        ? Alignment.centerLeft
-        : Alignment.centerRight;
+    final isRtl = language.textDirection == TextDirection.rtl;
+    final alignment = isRtl ? Alignment.centerLeft : Alignment.centerRight;
     final items = [
       _NavItem(
         icon: Icons.timer_outlined,
@@ -136,7 +138,7 @@ class AppHeader extends ConsumerWidget {
       pageBuilder: (_, __, ___) => const SizedBox.shrink(),
       transitionBuilder: (context, animation, __, ___) {
         final offsetTween = Tween<Offset>(
-          begin: Offset(language == AppLanguage.he ? -1 : 1, 0),
+          begin: Offset(isRtl ? -1 : 1, 0),
           end: Offset.zero,
         );
         return Align(

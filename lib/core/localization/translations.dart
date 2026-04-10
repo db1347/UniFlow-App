@@ -897,6 +897,96 @@ final Map<String, Map<AppLanguage, String>> _translations = {
     AppLanguage.ru: 'Выберите язык',
     AppLanguage.ar: 'اختر اللغة',
   },
+  'onboarding_study_title': {
+    AppLanguage.en: 'Set Up Your Countdown',
+    AppLanguage.he: 'הגדר את הספירה לאחור שלך',
+    AppLanguage.ru: 'Настройте ваш обратный отсчёт',
+    AppLanguage.ar: 'اضبط عدادك التنازلي',
+  },
+  'onboarding_study_desc': {
+    AppLanguage.en: 'We\'ll auto-configure your main countdown based on your degree.',
+    AppLanguage.he: 'נגדיר את הספירה הראשית שלך בהתאם לתואר.',
+    AppLanguage.ru: 'Мы автоматически настроим основной отсчёт исходя из вашей степени.',
+    AppLanguage.ar: 'سنضبط العداد الرئيسي تلقائياً بناءً على درجتك العلمية.',
+  },
+  'onboarding_start_when': {
+    AppLanguage.en: 'When did you start?',
+    AppLanguage.he: 'מתי התחלת ללמוד?',
+    AppLanguage.ru: 'Когда вы начали учиться?',
+    AppLanguage.ar: 'متى بدأت الدراسة؟',
+  },
+  'onboarding_semester_a': {
+    AppLanguage.en: 'Sem A (Oct)',
+    AppLanguage.he: 'סמ׳ א (אוק׳)',
+    AppLanguage.ru: 'Сем. A (окт.)',
+    AppLanguage.ar: 'فصل أ (أكتوبر)',
+  },
+  'onboarding_semester_b': {
+    AppLanguage.en: 'Sem B (Mar)',
+    AppLanguage.he: 'סמ׳ ב (מרץ)',
+    AppLanguage.ru: 'Сем. B (март)',
+    AppLanguage.ar: 'فصل ب (مارس)',
+  },
+  'onboarding_degree_label': {
+    AppLanguage.en: 'Degree type',
+    AppLanguage.he: 'סוג התואר',
+    AppLanguage.ru: 'Тип степени',
+    AppLanguage.ar: 'نوع الدرجة العلمية',
+  },
+  'onboarding_graduation_estimate': {
+    AppLanguage.en: 'Estimated graduation',
+    AppLanguage.he: 'תאריך סיום משוער',
+    AppLanguage.ru: 'Ожидаемое окончание',
+    AppLanguage.ar: 'التخرج المتوقع',
+  },
+  'degree_ba3': {
+    AppLanguage.en: 'B.A / B.Sc — 3 yr',
+    AppLanguage.he: 'תואר ראשון — 3 שנים',
+    AppLanguage.ru: 'Бакалавр — 3 года',
+    AppLanguage.ar: 'بكالوريوس — 3 سنوات',
+  },
+  'degree_law35': {
+    AppLanguage.en: 'B.A Law — 3.5 yr',
+    AppLanguage.he: 'משפטים — 3.5 שנים',
+    AppLanguage.ru: 'Бакалавр права — 3.5 года',
+    AppLanguage.ar: 'بكالوريوس قانون — 3.5 سنة',
+  },
+  'degree_bsc4': {
+    AppLanguage.en: 'B.Sc — 4 yr (Eng / Education / Pharma)',
+    AppLanguage.he: 'תואר ראשון — 4 שנים (הנדסה / חינוך / פארמה)',
+    AppLanguage.ru: 'Бакалавр — 4 года (инженерия / педагогика)',
+    AppLanguage.ar: 'بكالوريوس — 4 سنوات (هندسة / تربية)',
+  },
+  'degree_barch5': {
+    AppLanguage.en: 'B.Arch / Art — 5 yr',
+    AppLanguage.he: 'אדריכלות / בצלאל — 5 שנים',
+    AppLanguage.ru: 'Архитектура / Искусство — 5 лет',
+    AppLanguage.ar: 'هندسة معمارية / فنون — 5 سنوات',
+  },
+  'degree_medicine6': {
+    AppLanguage.en: 'Medicine — 6 yr',
+    AppLanguage.he: 'רפואה — 6 שנים',
+    AppLanguage.ru: 'Медицина — 6 лет',
+    AppLanguage.ar: 'طب — 6 سنوات',
+  },
+  'degree_ma2': {
+    AppLanguage.en: 'M.A / M.Sc — 2 yr',
+    AppLanguage.he: 'תואר שני — 2 שנים',
+    AppLanguage.ru: 'Магистратура — 2 года',
+    AppLanguage.ar: 'ماجستير — سنتان',
+  },
+  'degree_mba2': {
+    AppLanguage.en: 'MBA — 2 yr',
+    AppLanguage.he: 'MBA — 2 שנים',
+    AppLanguage.ru: 'MBA — 2 года',
+    AppLanguage.ar: 'ماجستير إدارة أعمال — سنتان',
+  },
+  'degree_phd4': {
+    AppLanguage.en: 'Ph.D. — 4 yr',
+    AppLanguage.he: 'דוקטורט — 4 שנים',
+    AppLanguage.ru: 'Докторантура — 4 года',
+    AppLanguage.ar: 'دكتوراه — 4 سنوات',
+  },
 
   // ── Help ─────────────────────────────────────────────────────────────────────
   'help': {
