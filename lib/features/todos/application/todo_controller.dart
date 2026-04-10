@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:students_app/core/providers/shared_prefs_provider.dart';
+import 'package:students_app/core/services/review_service.dart';
 import 'package:students_app/features/todos/domain/task.dart';
 
 final todoControllerProvider = NotifierProvider<TodoController, TodoState>(
@@ -166,6 +167,7 @@ class TodoController extends Notifier<TodoState> {
   }
 
   void toggleTask(int id) {
+    final wasCompleted = state.tasks.any((t) => t.id == id && t.completed);
     final updated = state.tasks
         .map(
           (task) =>
@@ -174,6 +176,12 @@ class TodoController extends Notifier<TodoState> {
         .toList();
     state = state.copyWith(tasks: updated);
     _persist();
+
+    // Trigger review prompt when a task is marked complete (not un-complete)
+    if (!wasCompleted) {
+      final prefs = ref.read(sharedPreferencesProvider);
+      ReviewService(prefs).onTaskCompleted();
+    }
   }
 
   void deleteTask(int id) {

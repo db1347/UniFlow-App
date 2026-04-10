@@ -988,6 +988,20 @@ final Map<String, Map<AppLanguage, String>> _translations = {
     AppLanguage.ar: 'دكتوراه — 4 سنوات',
   },
 
+  // ── Rate ─────────────────────────────────────────────────────────────────────
+  'rate_app': {
+    AppLanguage.en: 'Rate UniFlow',
+    AppLanguage.he: 'דרג את UniFlow',
+    AppLanguage.ru: 'Оценить UniFlow',
+    AppLanguage.ar: 'قيّم UniFlow',
+  },
+  'rate_app_subtitle': {
+    AppLanguage.en: 'Enjoying the app? Leave a review on the Play Store!',
+    AppLanguage.he: 'נהנה מהאפליקציה? השאר ביקורת בחנות!',
+    AppLanguage.ru: 'Нравится приложение? Оставьте отзыв в Play Store!',
+    AppLanguage.ar: 'هل تستمتع بالتطبيق؟ اترك تقييماً في المتجر!',
+  },
+
   // ── Help ─────────────────────────────────────────────────────────────────────
   'help': {
     AppLanguage.en: 'Help',

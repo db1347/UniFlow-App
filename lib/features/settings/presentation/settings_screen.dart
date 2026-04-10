@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:students_app/core/localization/app_language.dart';
 import 'package:students_app/core/localization/translations.dart';
+import 'package:students_app/core/providers/shared_prefs_provider.dart';
+import 'package:students_app/core/services/review_service.dart';
 import 'package:students_app/core/theme/app_theme.dart';
 import 'package:students_app/features/settings/application/settings_controller.dart';
 import 'package:students_app/shared/widgets/app_header.dart';
@@ -92,6 +94,19 @@ class SettingsScreen extends ConsumerWidget {
                       date: settings.mainStartDate,
                       onPressed: (date) => themeNotifier.setMainStartDate(
                         date ?? settings.mainStartDate,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Card(
+                      child: ListTile(
+                        leading: const Icon(Icons.star_outline_rounded),
+                        title: Text(l10n.t('rate_app')),
+                        subtitle: Text(l10n.t('rate_app_subtitle')),
+                        trailing: const Icon(Icons.open_in_new, size: 18),
+                        onTap: () {
+                          final prefs = ref.read(sharedPreferencesProvider);
+                          ReviewService(prefs).requestManualReview();
+                        },
                       ),
                     ),
                   ],
